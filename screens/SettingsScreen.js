@@ -1,20 +1,73 @@
+import {View, Text, Image} from 'react-native';
+import React, {useEffect, useState} from 'react';
 import {
-    Text,
-    View
-  } from "react-native";
-  import React from "react";
-  
-  const SettingsScreen = () => {
-    return (
-      
-          <View >
-            <Text >
-              pls add this...
-            </Text>
-          </View>
-  
-    );
+  GoogleSignin,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
+
+const SettingsScreen = () => {
+  const [userInfo, setUserInfo] = useState(null);
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId:
+        '102601518966-r23drh3f6dk63qaqlj4jehup2d3jrd6b.apps.googleusercontent.com',
+    });
+  }, []);
+  const signIn = async () => {
+    try {
+      console.log("try");
+
+      await GoogleSignin.hasPlayServices();
+      const usrInfo = await GoogleSignin.signIn();
+      setUserInfo(usrInfo);
+    } catch (error) {
+    if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+      console.log(1);
+      // user cancelled the login flow
+    } else if (error.code === statusCodes.IN_PROGRESS) {
+      console.log(2);
+
+      // operation (e.g. sign in) is in progress already
+    } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+      console.log(3);
+
+      // play services not available or outdated
+    } else {
+      console.log(error);
+      // some other error happened
+  }}};
+  const signout = async () => {
+    try {
+      await GoogleSignin.signOut();
+      setUserInfo(null); // Remember to remove the user from your app's state as well
+    } catch (error) {
+      console.error(error);
+    }
   };
-  
-  export default SettingsScreen;
-  
+  return (
+    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+    {userInfo != null && <Text>{userInfo.user.name}</Text>}
+    {userInfo != null && <Text>{userInfo.user.email}</Text>}
+    {userInfo != null && (
+      <Image
+      source={{uri: userInfo.user.photo}}
+      style={{width: 100, height: 100}} 
+      />
+    )}
+    {userInfo == null ? (
+    <Text
+    style={{padding: 20, borderWidth: 1}}
+    onPress={() => {
+    signIn(); }}>
+    Sign in
+    </Text>
+    ): (
+    <Text style={{padding: 20, borderWidth: 1, marginTop: 30}} onPress={()=>{
+    signout() }}>
+    Sign out
+    </Text>
+    )}
+    </View> 
+  );
+};
+export default SettingsScreen;

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "118779391236",
+    "project_id": "sm-app-de07c",
+    "storage_bucket": "sm-app-de07c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:118779391236:android:638a55b99af102d5223451",
+        "android_client_info": {
+          "package_name": "com.fml1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDijrTO_e_Bc-8etmbokYD6WhiaoUzYFxM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
