@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, ScrollView, Image } from "react-native";
 import React, { useEffect, useContext, useState, useCallback } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import jwt_decode from "jwt-decode";
+import jwt_decode from "jwt-decode"; 
 import { UserType } from "../UserContext";
 import axios from "axios";
 import { useFocusEffect } from "@react-navigation/native";
