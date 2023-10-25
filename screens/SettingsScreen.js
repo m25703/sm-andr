@@ -1,11 +1,11 @@
-import {View, Text, Image} from 'react-native';
+import {View, Text, Image, Button} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {
   GoogleSignin,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
 
-const SettingsScreen = () => {
+const SettingsScreen = ({navigation}) => {
   const [userInfo, setUserInfo] = useState(null);
   useEffect(() => {
     GoogleSignin.configure({
@@ -20,7 +20,7 @@ const SettingsScreen = () => {
       await GoogleSignin.hasPlayServices();
       const usrInfo = await GoogleSignin.signIn();
       setUserInfo(usrInfo);
-      console.log(usrInfo)
+      console.log(usrInfo);
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         console.log(1);
@@ -74,6 +74,12 @@ const SettingsScreen = () => {
           Sign out
         </Text>
       )}
+      <View>
+      <Button title="Go to Main" onPress={() => navigation.navigate('Main')} />
+      <Button title="Login" onPress={() => navigation.navigate('LoginScreen')} />
+      {/* <Button title="Settings" onPress={() => navigation.navigate('SettingsScreen')} /> */}
+      <Button title="Go to Register" onPress={() => navigation.navigate('RegisterScreen')} />  
+      </View>
     </View>
   );
 };

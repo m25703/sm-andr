@@ -1,17 +1,18 @@
 import {
-  Text,
+  Button,
   View
 } from "react-native";
 import React from "react";
 
-const RegisterScreen = () => {
+const RegisterScreen = ({navigation}) => {
   return (
     
-        <View >
-          <Text >
-            pls use google sign-in...
-          </Text>
-        </View>
+    <View>
+    <Button title="Go to Main" onPress={() => navigation.navigate('Main')} />
+    <Button title="Login" onPress={() => navigation.navigate('LoginScreen')} />
+    <Button title="Settings" onPress={() => navigation.navigate('SettingsScreen')} />
+    {/* <Button title="Go to Register" onPress={() => navigation.navigate('RegisterScreen')} />   */}
+    </View>
 
   );
 };
