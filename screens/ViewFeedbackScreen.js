@@ -7,7 +7,27 @@ import axios from "axios";
 import { useFocusEffect } from "@react-navigation/native";
 
 const HomeScreen = () => {
-  
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userInfo, setUserInfo] = useState(null);
+  const _retrieveData = async () => {
+    try {
+      const data = await AsyncStorage.getItem('isLoggedIn');
+      if (data !== null) {
+        setIsLoggedIn(JSON.parse(data)); 
+      }
+      const user = await AsyncStorage.getItem('userInfo');
+      const userInfoString = await AsyncStorage.getItem('userInfo');
+      if (userInfoString !== null) {
+        const userInfo = JSON.parse(userInfoString);
+        setUserInfo(userInfo);
+      }
+    } catch (error) {
+      console.error('Error retrieving user info:', error);
+    }
+  };
+  useEffect(() => {
+    _retrieveData();
+  }, []);
   const { userId, setUserId } = useState("test2");
   const [posts, setPosts] = useState([]);
   useEffect(() => {

@@ -9,6 +9,27 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { UserType } from "../UserContext";
 
 const RatingsScreen = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userInfo, setUserInfo] = useState(null);
+  const _retrieveData = async () => {
+    try {
+      const data = await AsyncStorage.getItem('isLoggedIn');
+      if (data !== null) {
+        setIsLoggedIn(JSON.parse(data)); 
+      }
+      const user = await AsyncStorage.getItem('userInfo');
+      const userInfoString = await AsyncStorage.getItem('userInfo');
+      if (userInfoString !== null) {
+        const userInfo = JSON.parse(userInfoString);
+        setUserInfo(userInfo);
+      }
+    } catch (error) {
+      console.error('Error retrieving user info:', error);
+    }
+  };
+  useEffect(() => {
+    _retrieveData();
+  }, []);
   const { userId, setUserId } = useState("test2");
   useEffect(() => {
     const fetchUsers = async () => {
