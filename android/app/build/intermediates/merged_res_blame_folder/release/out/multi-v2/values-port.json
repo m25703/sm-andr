@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.fml1.app-mergeReleaseResources-42:/values-port/values-port.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\mgupt\\.gradle\\caches\\transforms-3\\a2936e2d728a0090bff53c7b068805d0\\transformed\\appcompat-1.5.0\\res\\values-port\\values-port.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "55",
+                        "endOffsets": "106"
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -43,7 +43,7 @@ const DrawerNavigator = () => {
   return (
     <Drawer.Navigator>
       <Drawer.Screen name="DashboardScreen" component={DashboardScreen} />
-      <Drawer.Screen name="ActivityScreen" component={ActivityScreen} />
+      {/* <Drawer.Screen name="ActivityScreen" component={ActivityScreen} />
       <Drawer.Screen
         name="CreateAnnouncementScreen"
         component={CreateAnnouncementScreen}
@@ -51,11 +51,11 @@ const DrawerNavigator = () => {
       <Drawer.Screen name="FeedbackScreen" component={FeedbackScreen} />
       <Drawer.Screen
         name="GuestFeedbackScreen"
-        component={GuestFeedbackScreen}
-      />
+        component={GuestFeedbackScreen} 
+      />*/}
       <Drawer.Screen name="MenuScreen" component={MenuScreen} />
-      <Drawer.Screen name="NotificationScreen" component={NotificationScreen} />
-      <Drawer.Screen name="OngoingMealScreen" component={OngoingMealScreen} />
+      {/* <Drawer.Screen name="NotificationScreen" component={NotificationScreen} />
+      <Drawer.Screen name="OngoingMealScreen" component={OngoingMealScreen} /> */}
       <Drawer.Screen name="RatingsScreen" component={RatingsScreen} />
       <Drawer.Screen name="ViewFeedbackScreen" component={ViewFeedbackScreen} />
     </Drawer.Navigator>

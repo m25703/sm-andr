@@ -52,21 +52,16 @@ const MenuScreen = () => {
   );
 
   const renderDay = (day, category) => (
-    <View key={day} style={styles.dayContainer}>
-      
-        <Text style={styles.dayHeaderText}>{category}</Text>
-        
+    <View key={`${day}-${category}`} style={styles.dayContainer}>
+      <Text style={styles.dayHeaderText}>{category}</Text>
       {days[day]?.[category].map((item, itemIndex) => (
-        <TouchableOpacity
-          key={itemIndex}
-          style={styles.itemTouchable}
-          onPress={() => {}}
-        >
+        <TouchableOpacity key={`${day}-${category}-${itemIndex}`} style={styles.itemTouchable} onPress={() => {}}>
           {renderItem({ item })}
         </TouchableOpacity>
       ))}
     </View>
   );
+  
 
   const renderColumn = () => (
     <View style={styles.column}>

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const OngoingMealScreen = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userInfo, setUserInfo] = useState(null);

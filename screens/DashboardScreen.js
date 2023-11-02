@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react';
 import {View, StyleSheet, TouchableOpacity, Text, FlatList} from 'react-native';
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const DashboardScreen = () => {
@@ -8,16 +7,13 @@ const DashboardScreen = () => {
   const [userInfo, setUserInfo] = useState(null);
   const _retrieveData = async () => {
     try {
-      const data = await AsyncStorage.getItem('isLoggedIn');
-      if (data !== null) {
-        setIsLoggedIn(JSON.parse(data));
-      }
       const user = await AsyncStorage.getItem('userInfo');
-      const userInfoString = await AsyncStorage.getItem('userInfo');
-      if (userInfoString !== null) {
-        const userInfo = JSON.parse(userInfoString);
-        setUserInfo(userInfo);
+      if (user !== null) {
+        setUserInfo(user);
+        setIsLoggedIn(true);
       }
+      console.log(userInfo);
+      console.log(isLoggedIn)
     } catch (error) {
       console.error('Error retrieving user info:', error);
     }
@@ -339,21 +335,21 @@ const DashboardScreen = () => {
           {/* <Icon name="cutlery" size={24} color="white" /> Replace with the appropriate knife and fork icon */}
           <Text style={[styles.title, { color: textColor }]}>{mealType}</Text>
         </View>
+        
         <FlatList
-          data={items}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => (
-            <Text style={[styles.item, { color: textColor }]}>
-              {item}
-            </Text>
-          )}
-        />
+  data={items}
+  keyExtractor={(item, index) => `${mealType}-${index}`}
+  renderItem={({ item }) => (
+    <Text style={[styles.item, { color: textColor }]}>{item}</Text>
+  )}
+/>
+
       </View>
     );
   };  
 
   const currentDayMenu = getCurrentDayMenu();
-  console.log(currentDayMenu);
+  // console.log(currentDayMenu);
 
   return (
     <View style={styles.pageContainer}>
