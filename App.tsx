@@ -9,7 +9,7 @@ function App() {
   }, []);
   const getDeviceToken = async () => {
     let token = await messaging().getToken();
-    console.log("Device Token:",token);
+    // console.log("Device Token:",token);
   };
   // AsyncStorage.setItem("keepLoggedIn",JSON.stringify(true));
   // AsyncStorage.setItem("isLoggedIn",JSON.stringify(true));
@@ -17,17 +17,30 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [keepLoggedIn, setKeepLoggedIn] = useState(true);
   const [userInfo, setUserInfo] = useState(null);
+  const [tkn,setkn] = useState(null);
+  const [storedData, setStoredData] = useState(null);
+  const [auth, setAuth] = useState("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImVtYWlsIjoiMjEwMDEwMDI4QGlpdGRoLmFjLmluIiwicm9sZSI6Im1hbmFnZXIiLCJ0aW1lIjoxNjk5MjU1NjY0NTMwfSwiaWF0IjoxNjk5MjU1NjY0LCJleHAiOjE2OTkzNDIwNjR9.piAeLq6-R8ARKT25lXAkhVhMXBrEjlKsTNW67gGETfo")
   const _retrieveData = async () => {
     try {
       const data = await AsyncStorage.getItem('isLoggedIn');
       if (data !== null) {
-        console.log("data: ", data);
+        console.log("async data stored: ", data);
         setIsLoggedIn(JSON.parse(data)); 
       }
       const user = await AsyncStorage.getItem('userInfo');
       if (user !== null) {
-        console.log("user: ", user);
+        console.log("async user stored: ", user);
         setUserInfo(JSON.parse(user));
+      }
+      const tkn = await AsyncStorage.getItem('tkn');
+      if (tkn !== null) {
+        console.log("async tkn stored: ", tkn);
+        setkn(JSON.parse(tkn));
+      }
+      const ath = await AsyncStorage.getItem('auth');
+      if (ath !== "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImVtYWlsIjoiMjEwMDEwMDI4QGlpdGRoLmFjLmluIiwicm9sZSI6Im1hbmFnZXIiLCJ0aW1lIjoxNjk5MjU1NjY0NTMwfSwiaWF0IjoxNjk5MjU1NjY0LCJleHAiOjE2OTkzNDIwNjR9.piAeLq6-R8ARKT25lXAkhVhMXBrEjlKsTNW67gGETfo") {
+        console.log("async tkn stored: ", ath);
+        setkn(JSON.parse(ath));
       }
     } catch (e) {
       console.log(e);

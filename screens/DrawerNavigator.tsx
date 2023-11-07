@@ -33,7 +33,7 @@ type RootDrawerParamList = {
   GuestFeedbackScreen: undefined;
   MenuScreen: undefined;
   NotificationScreen: undefined;
-  OngoingMealScreen: undefined;
+  ComplaintsScreen: undefined;
 };
 
 const Drawer = createDrawerNavigator<RootDrawerParamList>();
@@ -54,8 +54,8 @@ const DrawerNavigator = () => {
         component={GuestFeedbackScreen} 
       />*/}
       <Drawer.Screen name="MenuScreen" component={MenuScreen} />
-      {/* <Drawer.Screen name="NotificationScreen" component={NotificationScreen} />
-      <Drawer.Screen name="OngoingMealScreen" component={OngoingMealScreen} /> */}
+      {/* <Drawer.Screen name="NotificationScreen" component={NotificationScreen} /> */}
+      {/* <Drawer.Screen name="ComplaintsScreen" component={ComplaintsScreen} /> */}
       <Drawer.Screen name="RatingsScreen" component={RatingsScreen} />
       <Drawer.Screen name="ViewFeedbackScreen" component={ViewFeedbackScreen} />
     </Drawer.Navigator>

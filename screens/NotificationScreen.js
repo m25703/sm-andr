@@ -1,92 +1,108 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import {
+  GoogleSignin,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
-const NotificationBox = ({ title, message }) => (
-  <View style={styles.notificationBox}>
-    <Text style={styles.notificationTitle}>{title}</Text>
-    <Text style={styles.notificationMessage}>{message}</Text>
-  </View>
-);
+const Dashboard = () => {
+  const [timetableData, setTimetableData] = useState(null);
 
-const NotificationPage = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userInfo, setUserInfo] = useState(null);
-  const _retrieveData = async () => {
+  const loadPage = async () => {
     try {
-      const data = await AsyncStorage.getItem('isLoggedIn');
-      if (data !== null) {
-        setIsLoggedIn(JSON.parse(data)); 
+      await GoogleSignin.hasPlayServices();
+      const usrInfo = await GoogleSignin.signIn();
+      GoogleSignin.signIn()
+        .then(userInfo => {
+          const currentUser = GoogleSignin.getTokens().then(res => {
+            const apiUrl = 'https://smartmess.iitdh.ac.in/api/auth/signin/android';
+            const userData = {
+              Email: userInfo.user.email,
+              Username: userInfo.user.name,
+              First_Name: userInfo.user.givenName,
+              Last_Name: userInfo.user.familyName,
+              Image: userInfo.user.photo,
+            };
+            axios
+            .post(`${apiUrl}`, userData)
+            .then(response => {
+              console.log('ns res token', response.data.token);
+              const apiUrl = 'https://smartmess.iitdh.ac.in/api/user/dashboard/timetable';
+              const headers = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${response.data.token}`
+              };
+              axios.get(apiUrl, { headers })
+                .then(response => {
+                  setTimetableData(response.data);
+                })
+                .catch(error => {
+                  console.error('ns: Error fetching data:', error);
+                });
+            })
+            .catch(error => {
+              console.error('ns: Error:', error);
+            });
+          });
+        })
+        .catch(error => {
+          console.error('.....' + JSON.stringify(error));
+        });
+
+      try {
+        const userInfoString = JSON.stringify(usrInfo);
+        await AsyncStorage.setItem('isLoggedIn', JSON.stringify(true));
+        await AsyncStorage.setItem('userInfo', userInfoString);
+      } catch (ee) {
+        console.error('ns: Error storing user info:', ee);
       }
-      const user = await AsyncStorage.getItem('userInfo');
-      const userInfoString = await AsyncStorage.getItem('userInfo');
-      if (userInfoString !== null) {
-        const userInfo = JSON.parse(userInfoString);
-        setUserInfo(userInfo);
-      }
+      console.log('ns: Successfully Loaded Menu Data');
     } catch (error) {
-      console.error('Error retrieving user info:', error);
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        console.error(error, error.code);
+      } else if (error.code === statusCodes.IN_PROGRESS) {        
+        console.error(error, error.code);
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        console.error(error, error.code);
+      } else {
+        console.error(error, error.code);
+      }
     }
   };
+
   useEffect(() => {
-    _retrieveData();
-  }, []);
-  const notifications = [
-    {
-      id: 1,
-      title: 'Notification Title 1',
-      message: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    },
-    {
-      id: 2,
-      title: 'Notification Title 2',
-      message: 'Praesent vel lorem nec velit posuere eleifend.',
-    },
-    // Add more notifications here
-  ];
+    loadPage()
+    }, []);
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {notifications.map((notification) => (
-        <NotificationBox
-          key={notification.id}
-          title={notification.title}
-          message={notification.message}
-        />
-      ))}
-    </ScrollView>
+    <View style={styles.container}>
+      <Text style={styles.heading}>Timetable Dashboard</Text>
+      {timetableData ? (
+        <Text style={styles.data}>
+          Timetable Data: {JSON.stringify(timetableData)}
+        </Text>
+      ) : (
+        <Text>Loading...</Text>
+      )}
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#F5F5F5',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  notificationBox: {
-    backgroundColor: '#FFFFFF',
-    padding: 20,
+  heading: {
+    fontSize: 24,
     marginBottom: 20,
-    borderWidth: 1,
-    borderColor: '#DDDDDD',
-    borderRadius: 5,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
   },
-  notificationTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  notificationMessage: {
+  data: {
     fontSize: 16,
   },
 });
 
-export default NotificationPage;
+export default Dashboard;

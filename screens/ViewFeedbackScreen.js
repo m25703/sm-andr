@@ -7,7 +7,7 @@ const ViewFeedbackScreen = () => {
   const [ratingsFetched, setRatingsFetched] = useState(false);
 
   useEffect(() => {
-    const apiUrl = 'http://192.168.80.21:3000';
+    const apiUrl = 'http://192.168.27.21:3000';
 
     axios
       .get(`${apiUrl}/ratings`)

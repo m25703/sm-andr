@@ -1,285 +1,93 @@
-import React, {useState, useEffect} from 'react';
-import {View, StyleSheet, TouchableOpacity, Text, FlatList} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  FlatList,
+  Icon,
+  Image,
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {ScrollView} from 'react-native-gesture-handler';
+import React, {useState, useEffect, Suspense, lazy} from 'react';
+import {
+  GoogleSignin,
+  statusCodes,
+  GoogleSigninButton,
+} from '@react-native-google-signin/google-signin';
+import axios from 'axios';
 
 const DashboardScreen = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userInfo, setUserInfo] = useState(null);
-  const _retrieveData = async () => {
-    try {
-      const user = await AsyncStorage.getItem('userInfo');
-      if (user !== null) {
-        setUserInfo(user);
-        setIsLoggedIn(true);
-      }
-      console.log(userInfo);
-      console.log(isLoggedIn)
-    } catch (error) {
-      console.error('Error retrieving user info:', error);
-    }
-  };
-  useEffect(() => {
-    _retrieveData();
-  }, []);
-
-  const days = {
-    Monday: {
-      Breakfast: [
-        'Poha',
-        'Sev / Namkeen',
-        'Boiled Sweet Corn',
-        'Omelette',
-        'Banana',
-        'Corn Flakes',
-        'BBJ / Pickle',
-        'Coffee / Bournvita / Milk',
-      ],
-      Lunch: [
-        'Lemon Rice',
-        'Plain Rice',
-        'Moong Dal',
-        'Rasam',
-        'Torai Chana Dry',
-        'Chole Masala',
-        'Plain Roti / Fulka Roti',
-        'Buttermilk',
-        'Green Chilli / Lemon Slices',
-        'Salad / Papad / Pickle',
-      ],
-      Snacks: [
-        'Vada Pav',
-        'Green Chutney & Dry Red Chutney',
-        'Banana',
-        'BBJ / Tea / Coffee',
-      ],
-      Dinner: [
-        'Plain Rice',
-        'Mix Dal',
-        'Black Channa Masala Dry',
-        'Aloo Rasewalla',
-        'Poori',
-        'Green Chilli / Lemon Slices',
-        'Salad / Papad / Pickle',
-        'Kheer',
-      ],
-    },
-    Tuesday: {
-      Breakfast: [
-        'Upma / Sheera',
-        'Coconut Chutney',
-        'Boiled Peanuts',
-        'Boiled Egg',
-        'Banana',
-        'Corn Flakes',
-        'BBJ / Pickle',
-        'Coffee / Bournvita / Milk',
-      ],
-      Lunch: [
-        'Onion Fried Rice',
-        'Plain Rice',
-        'Arhar Dal',
-        'Sambhar',
-        'Moong Masala Dry',
-        'Gobi Mutter Rasewalla',
-        'Plain Roti / Butter Roti',
-        'Buttermilk',
-        'Green Chilli / Lemon Slices',
-        'Salad / Papad / Pickle',
-      ],
-      Snacks: ['Dahi Wada', 'Banana', 'BBJ / Tea / Coffee'],
-      Dinner: [
-        'Corn Rice',
-        'Plain Rice',
-        'Moong Dal',
-        'Paneer Kohlapuri',
-        'Plain Roti / Fulka Roti',
-        'Green Chilli / Lemon Slices',
-        'Salad / Papad / Pickle',
-        'Gulab Jamun',
-      ],
-    },
-    Wednesday: {
-      Breakfast: [
-        'Methi Paratha',
-        'Veg Korma',
-        'Channa Masala',
-        'Egg Bhurji',
-        'Banana',
-        'Corn Flakes',
-        'BBJ / Pickle',
-        'Coffee / Bournvita / Milk',
-      ],
-      Lunch: [
-        'Curd Rice',
-        'Plain Rice',
-        'Masoor Dal',
-        'Rasam',
-        'Cabbage Capsicum Dry',
-        'Manchurian Gravy',
-        'Plain Roti / Butter Roti',
-        'Lassi',
-        'Green Chilli / Lemon Slices',
-        'Salad / Papad / Pickle',
-      ],
-      Snacks: ['Veg Cutlet', 'Red Chutney', 'Banana', 'BBJ / Tea / Coffee'],
-      Dinner: [
-        'Plain Rice',
-        'Dal Tadka',
-        'Kashmiri Dum Aloo',
-        'Chawali Masala',
-        'Plain Roti / Fulka Roti',
-        'Green Chilli / Lemon Slices',
-        'Salad / Papad / Pickle',
-        'Ice Cream / Kulfi',
-      ],
-    },
-    Thursday: {
-      Breakfast: [
-        'Idli Vada',
-        'Sambar / Chutney',
-        'Black Channa Sprouts',
-        'Boiled Egg',
-        'Banana',
-        'Corn Flakes',
-        'BBJ / Pickle',
-        'Coffee / Bournvita / Milk',
-      ],
-      Lunch: [
-        'Lemon Rice',
-        'Plain Rice',
-        'Dal Palak',
-        'Sambhar',
-        'Bhindi Fry',
-        'Soya Chunks Masala Dry',
-        'Plain Roti / Butter Roti',
-        'Curd',
-        'Green Chilli / Lemon Slices',
-        'Salad / Papad / Pickle',
-      ],
-      Snacks: [
-        'Pav Bhaji',
-        'Chopped Onion & Lemon',
-        'Banana',
-        'BBJ / Tea / Coffee',
-      ],
-      Dinner: [
-        'Plain Rice',
-        'Jeera Rice',
-        'Dal Tadka',
-        'Paneer Chilli',
-        'Plain Roti / Fulka Roti',
-        'Green Chilli / Lemon Slices',
-        'Salad / Papad / Pickle',
-        'Moong Dal Halwa',
-      ],
-    },
+  const [combinedMealData, setCombinedMealData] = useState(null);
+  const [days, setDays] = useState({
     Friday: {
       Breakfast: [
-        'Poori',
-        'Chole',
-        'Green Moong Sprouts',
-        'Banana',
-        'Corn Flakes',
-        'BBJ / Pickle',
-        'Coffee / Bournvita / Milk',
-      ],
-      Lunch: [
-        'Veg Biryani',
-        'Egg Biryani',
-        'Veg Raita',
-        'Mix Veg Curry',
-        'Plain Roti / Fulka Roti',
-        'Rasna',
-        'Green Chilli / Lemon Slices',
-        'Salad / Papad / Pickle',
-      ],
-      Snacks: ['Veg Maggi', 'Banana', 'BBJ / Tea / Coffee'],
-      Dinner: [
-        'Tomato Rice',
-        'Plain Rice',
-        'Mix Dal',
-        'Mushroom Masala',
-        'Rajma Masala',
-        'Plain Roti / Fulka Roti',
-        'Green Chilli / Lemon Slices',
-        'Salad / Papad / Pickle',
-        'Fruit Custard',
-      ],
-    },
-    Saturday: {
-      Breakfast: [
-        'Masala Dosa',
-        'Sambar / Chutney',
-        'Matki Sprouts',
-        'Boiled Egg',
-        'Banana',
-        'Corn Flakes',
-        'BBJ / Pickle',
-        'Coffee / Bournvita / Milk',
-      ],
-      Lunch: [
-        'Jeera Rice',
-        'Dal Tadka',
-        'Sambhar',
-        'Gawar Masala Dry',
-        'Aloo Mutter',
-        'Plain Roti / Butter Roti',
-        'Buttermilk',
-        'Green Chilli / Lemon Slices',
-        'Salad / Papad / Pickle',
-      ],
-      Snacks: [
-        'Samosa',
-        'Green Chilli & Red Chutney',
-        'Banana',
-        'BBJ / Tea / Coffee',
+        'Coffee/BournVita',
       ],
       Dinner: [
-        'Onion Masala Rice',
-        'Plain Rice',
-        'Dal Panchratna',
-        'Matki Masala Dry',
-        'Veg Kadhai Gravy',
-        'Plain Roti / Fulka Roti',
-        'Green Chilli / Lemon Slices',
-        'Salad / Papad / Pickle',
-        'Ice Cream',
-      ],
-    },
-    Sunday: {
-      Breakfast: [
-        'Aloo Paratha',
-        'Curd',
-        'Green Moong Sprouts',
-        'Banana',
-        'Corn Flakes',
-        'BBJ / Pickle',
-        'Coffee / Bournvita / Milk',
+        'PLAIN RICE',
       ],
       Lunch: [
-        'Plain Rice',
-        'Toor Dal',
-        'Egg Curry',
-        'Paneer Tawa Masala',
-        'Plain Roti / Butter Roti',
-        'Mango Rasna',
-        'Green Chilli / Lemon Slices',
-        'Salad / Papad / Pickle',
+        'PLAIN ROTI  /  FULKA  ROTI',
       ],
-      Snacks: ['Pakoda', 'Green Chutney', 'Banana', 'BBJ / Tea / Coffee'],
-      Dinner: [
-        'Veg Pulao',
-        'Raita',
-        'Green Chawli Subzi',
-        'Mix Veg Curry',
-        'Plain Roti / Fulka Roti',
-        'Green Chilli / Lemon Slices',
-        'Salad / Papad / Pickle',
-        'Kala Jamun',
-      ],
+      Snacks: ['BANANA'],
     },
-  };
-
+    Monday: {Breakfast: [
+        'Coffee/BournVita',
+      ],
+      Dinner: [
+        'PLAIN RICE',
+      ],
+      Lunch: [
+        'PLAIN ROTI  /  FULKA  ROTI',
+      ],
+      Snacks: ['BANANA'],
+    },
+    Saturday: {Breakfast: [
+      'Coffee/BournVita',
+    ],
+    Dinner: [
+      'PLAIN RICE',
+    ],
+    Lunch: [
+      'PLAIN ROTI  /  FULKA  ROTI',
+    ],
+    Snacks: ['BANANA'],
+    },
+    Thursday: {Breakfast: [
+      'Coffee/BournVita',
+    ],
+    Dinner: [
+      'PLAIN RICE',
+    ],
+    Lunch: [
+      'PLAIN ROTI  /  FULKA  ROTI',
+    ],
+    Snacks: ['BANANA'],
+    },
+    Tuesday: {Breakfast: [
+      'Coffee/BournVita',
+    ],
+    Dinner: [
+      'PLAIN RICE',
+    ],
+    Lunch: [
+      'PLAIN ROTI  /  FULKA  ROTI',
+    ],
+    Snacks: ['BANANA'],
+    },
+    Wednesday: {Breakfast: [
+      'Coffee/BournVita',
+    ],
+    Dinner: [
+      'PLAIN RICE',
+    ],
+    Lunch: [
+      'PLAIN ROTI  /  FULKA  ROTI',
+    ],
+    Snacks: ['BANANA'],
+    },
+  });
   const [ser, setSer] = useState('');
   const reqDate = new Date();
   console.log(reqDate.toLocaleTimeString());
@@ -312,75 +120,259 @@ const DashboardScreen = () => {
     return () => clearInterval(interval);
   }, []);
 
-  console.log(`It's currently ${ser} time.`);
-
-  const getCurrentDayMenu = () => {
-    const currentDayIndex = new Date().getDay();
-    const currentDayName = [
-      'Sunday',
-      'Monday',
-      'Tuesday',
-      'Wednesday',
-      'Thursday',
-      'Friday',
-      'Saturday',
-    ][currentDayIndex];
-    return days[currentDayName];
+  const [timetableData, setTimetableData] = useState(null);
+  const filterItemsData = menuData => {
+    const filteredData = [];
+    for (const entry of menuData) {
+      const {Day, Type, Items} = entry;
+      if (Items && Array.isArray(Items)) {
+        const itemNames = Items.map(item => (item && item.Name) || null).filter(
+          Boolean,
+        );
+        filteredData.push({
+          Day,
+          Type,
+          Items: itemNames,
+        });
+      }
+    }
+    return filteredData;
   };
 
-  const MealBox = ({ mealType, items, bgColor, textColor }) => {
-    return (
-      <View style={[styles.container, { backgroundColor: bgColor }]}>
-        <View style={styles.titleContainer}>
-          {/* <Icon name="cutlery" size={24} color="white" /> Replace with the appropriate knife and fork icon */}
-          <Text style={[styles.title, { color: textColor }]}>{mealType}</Text>
-        </View>
-        
-        <FlatList
-  data={items}
-  keyExtractor={(item, index) => `${mealType}-${index}`}
-  renderItem={({ item }) => (
-    <Text style={[styles.item, { color: textColor }]}>{item}</Text>
-  )}
-/>
+  function generateMenuStructure(filteredItems) {
+    const menuStructure = {};
 
+    filteredItems.forEach(item => {
+      const {Day, Type, Items} = item;
+
+      if (!menuStructure[Day]) {
+        menuStructure[Day] = {};
+      }
+
+      if (!menuStructure[Day][Type]) {
+        menuStructure[Day][Type] = [];
+      }
+
+      menuStructure[Day][Type] = [...menuStructure[Day][Type], ...Items];
+    });
+
+    return menuStructure;
+  }
+
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Your data and renderItem logic
+
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+
+    // Fetch new data or refresh existing data
+    // Once the data is updated, set isRefreshing to false
+
+    setTimeout(() => {
+      setIsRefreshing(false); // Simulating data fetch completion
+    }, 2000);
+  };
+
+  useEffect(() => {
+    const refreshTimer = setTimeout(() => {
+      handleRefresh(); // Trigger the refresh action
+    }, 5000); // Refresh after 5 seconds
+
+    return () => {
+      clearTimeout(refreshTimer); // Clear the timer to avoid unwanted refreshes
+    };
+  }, []);
+
+  const loadPage = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const usrInfo = await GoogleSignin.signIn();
+      GoogleSignin.signIn()
+        .then(userInfo => {
+          const currentUser = GoogleSignin.getTokens().then(res => {
+            const apiUrl =
+              'https://smartmess.iitdh.ac.in/api/auth/signin/android';
+            // const apiUrl = 'http://192.168.27.21:8001/api/auth/signin/android';
+            const userData = {
+              Email: userInfo.user.email,
+              Username: userInfo.user.name,
+              First_Name: userInfo.user.givenName,
+              Last_Name: userInfo.user.familyName,
+              Image: userInfo.user.photo,
+            };
+            axios
+              .post(apiUrl, userData)
+              .then(response => {
+                console.log('dashboardScreen: res token', response.data.token);
+                const apiUrl =
+                  'https://smartmess.iitdh.ac.in/api/user/dashboard/timetable';
+                const headers = {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${response.data.token}`,
+                };
+
+                axios
+                  .get(apiUrl, {headers})
+                  .then(response => {
+                    setTimetableData(response.data);
+                    console.log(JSON.stringify(response.data));
+                    const filteredResult = filterItemsData(response.data);
+                    console.log(filteredResult);
+                    const menuStructure = generateMenuStructure(filteredResult);
+                    console.log(
+                      JSON.stringify(menuStructure, null, 2),
+                      'menuStructure set',
+                    );
+                    setDays(menuStructure);
+                    console.log(days, 'days set');
+                    const currentDayIndex = new Date().getDay();
+                    const currentDayName = [
+                      'Sunday',
+                      'Monday',
+                      'Tuesday',
+                      'Wednesday',
+                      'Thursday',
+                      'Friday',
+                      'Saturday',
+                    ][currentDayIndex];
+                    console.log(currentDayName);
+                    const km = mealTypes.map(mealType => ({
+                      mealType,
+                      items: menuStructure[currentDayName][mealType],
+                      bgColor: mealTypeColors[mealType].bgColor,
+                      textColor: mealTypeColors[mealType].textColor,
+                    }));
+                    setCombinedMealData(km);
+                  })
+                  .catch(error => {
+                    console.error(
+                      'dashboardScreen:: Error fetching data:',
+                      error,
+                    );
+                  });
+              })
+              .catch(error => {
+                console.error('dashboardScreen:: Error:', error);
+              });
+          });
+        })
+        .catch(error => {
+          console.error('.....' + JSON.stringify(error));
+        });
+
+      try {
+        const userInfoString = JSON.stringify(usrInfo);
+        await AsyncStorage.setItem('isLoggedIn', JSON.stringify(true));
+        await AsyncStorage.setItem('userInfo', userInfoString);
+      } catch (ee) {
+        console.error('dashboardScreen:: Error storing user info:', ee);
+      }
+      console.log('dashboardScreen:: Successfully Loaded Menu Data');
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        console.error(error, error.code);
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        console.error(error, error.code);
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        console.error(error, error.code);
+      } else {
+        console.error(error, error.code);
+      }
+    }
+  };
+
+  useEffect(() => {
+    loadPage();
+  }, []);
+
+  const mealTypeImages = {
+    Breakfast: require('./breakfast_logo.png'),
+    Lunch: require('./lunch_logo.png'),
+    Snacks: require('./snacks_logo.png'),
+    Dinner: require('./dinner_logo.png'),
+  };
+
+  const MealBox = ({mealType, items, bgColor, textColor}) => {
+    const mealImage = mealTypeImages[mealType];
+    return (
+      <View
+        style={[
+          styles.container,
+          {backgroundColor: bgColor, borderRadius: 15},
+        ]}>
+        <Image
+          source={mealImage}
+          style={{height: 90, width: 90, aspectRatio: 1, margin: '7%'}}
+        />
+        <Text style={[styles.title, {color: textColor}]}>{mealType}</Text>
+
+        <FlatList
+          data={items}
+          keyExtractor={(item, index) => `${mealType}-${index}`}
+          renderItem={({item}) => (
+            <Text style={[styles.item, {color: textColor}]}>{item}</Text>
+          )}
+        />
       </View>
     );
-  };  
+  };
 
-  const currentDayMenu = getCurrentDayMenu();
-  // console.log(currentDayMenu);
+  const mealTypes = ['Breakfast', 'Lunch', 'Snacks', 'Dinner'];
+  const mealTypeColors = {
+    Breakfast: {bgColor: '#D1E9FC', textColor: '#3E548E'},
+    Lunch: {bgColor: '#E9FCD4', textColor: '#479044'},
+    Snacks: {bgColor: '#FFF7CD', textColor: '#A68745'},
+    Dinner: {bgColor: '#FFE7D9', textColor: '#9F495D'},
+  };
 
-  return (
+  return days ? (
     <View style={styles.pageContainer}>
-      <MealBox mealType="Breakfast" items={currentDayMenu.Breakfast} bgColor="#D1E9FC" textColor="#3E548E"/>
-      <MealBox mealType="Lunch" items={currentDayMenu.Lunch} bgColor="#E9FCD4" textColor="#479044"/>
-      <MealBox mealType="Snacks" items={currentDayMenu.Snacks} bgColor="#FFF7CD" textColor="#A68745"/>
-      <MealBox mealType="Dinner" items={currentDayMenu.Dinner} bgColor="#FFE7D9" textColor="#9F495D"/>
+      <Text
+        style={{
+          fontSize: 28,
+          fontWeight: 'bold',
+          color: '#212B36',
+          margin: '5%',
+        }}>
+        Today's Menu
+      </Text>
+      <FlatList
+        data={combinedMealData}
+        keyExtractor={item => item.mealType}
+        renderItem={({item}) => (
+          <MealBox
+            mealType={item.mealType}
+            items={item.items}
+            bgColor={item.bgColor}
+            textColor={item.textColor}
+          />
+        )}
+      />
     </View>
+  ) : (
+    <Text>Loading...</Text>
   );
 };
 
 const styles = StyleSheet.create({
   pageContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    margin: 0,
+    backgroundColor: '#FFFFFF',
+    marginBottom: '15%',
   },
   container: {
-    backgroundColor: '#F9FAFB',
-    padding: 10,
-    margin: 10,
-    width: '80%',
+    padding: '5%',
+    margin: '3%',
+    width: '94%',
     alignContent: 'center',
     alignItems: 'center',
-    // alignSelf: 'center',
     textAlign: 'center',
+    paddingBottom: '10%',
   },
   title: {
     fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: 24,
     marginBottom: 10,
   },
   item: {
@@ -389,9 +381,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     textAlign: 'center',
     margin: 1,
-    fontSize: 14,
+    fontSize: 18,
   },
 });
-
 
 export default DashboardScreen;

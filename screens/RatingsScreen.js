@@ -9,6 +9,10 @@ import {
   FlatList,
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
+import {
+  GoogleSignin,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
@@ -17,6 +21,75 @@ const RatingsScreen = ({navigation}) => {
   const [userInfo, setUserInfo] = useState(null);
   const [foodItems, setFoodItems] = useState([]);
   const [parsedData, setParsedData] = useState('');
+  const [timetableData, setTimetableData] = useState(null);
+
+  const loadPage = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const usrInfo = await GoogleSignin.signIn();
+      GoogleSignin.signIn()
+        .then(userInfo => {
+          const currentUser = GoogleSignin.getTokens().then(res => {
+            const apiUrl = 'https://smartmess.iitdh.ac.in/api/auth/signin/android';
+            const userData = {
+              Email: userInfo.user.email,
+              Username: userInfo.user.name,
+              First_Name: userInfo.user.givenName,
+              Last_Name: userInfo.user.familyName,
+              Image: userInfo.user.photo,
+            };
+            axios
+            .post(`${apiUrl}`, userData)
+            .then(response => {
+              console.log('ns res token', response.data.token);
+              const apiUrl = 'https://smartmess.iitdh.ac.in/api/user/dashboard/timetable';
+              const headers = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${response.data.token}`
+              };
+              axios.get(apiUrl, { headers })
+                .then(response => {
+                  setTimetableData(response.data);
+                })
+                .catch(error => {
+                  console.error('ns: Error fetching data:', error);
+                });
+            })
+            .catch(error => {
+              console.error('ns: Error:', error);
+            });
+          });
+        })
+        .catch(error => {
+          console.error('.....' + JSON.stringify(error));
+        });
+
+      try {
+        const userInfoString = JSON.stringify(usrInfo);
+        await AsyncStorage.setItem('isLoggedIn', JSON.stringify(true));
+        await AsyncStorage.setItem('userInfo', userInfoString);
+      } catch (ee) {
+        console.error('ns: Error storing user info:', ee);
+      }
+      console.log('ns: Successfully Loaded Menu Data');
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        console.error(error, error.code);
+      } else if (error.code === statusCodes.IN_PROGRESS) {        
+        console.error(error, error.code);
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        console.error(error, error.code);
+      } else {
+        console.error(error, error.code);
+      }
+    }
+  };
+
+  useEffect(() => {
+    loadPage()
+    }, []);
+
+
 
   const _retrieveData = async () => {
     try {
@@ -34,17 +107,17 @@ const RatingsScreen = ({navigation}) => {
   useEffect(() => {
     _retrieveData();
 
-    const apiUrl = 'http://192.168.80.21:3000';
-    axios
-      .get(`${apiUrl}/foodItems`)
-      .then(response => {
-        const foodItems = response.data.foodItems;
-        setFoodItems(foodItems);
-        console.log('Successfully fetched items');
-      })
-      .catch(error => {
-        console.log('Error fetching food items', error);
-      });
+    // const apiUrl = 'http://192.168.27.21:3000';
+    // axios
+    //   .get(`${apiUrl}/foodItems`)
+    //   .then(response => {
+    //     const foodItems = response.data.foodItems;
+    //     setFoodItems(foodItems);
+    //     console.log('Successfully fetched items');
+    //   })
+    //   .catch(error => {
+    //     console.log('Error fetching food items', error);
+    //   });
   }, []);
 
   const [rating, setRating] = useState('');
@@ -84,6 +157,14 @@ const RatingsScreen = ({navigation}) => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.heading}>Timetable Dashboard</Text>
+      {timetableData ? (
+        <Text style={styles.data}>
+          Timetable Data: {JSON.stringify(timetableData)}
+        </Text>
+      ) : (
+        <Text>Loading...</Text>
+      )}
       <View style={styles.starContainer}>
         {[1, 2, 3, 4, 5].map(starValue => (
           <TouchableOpacity

@@ -1,0 +1,44 @@
+{
+  "Monday": {
+    "Breakfast": ["Masala Dosa", "Sambar / Chutney"],
+    "Lunch": ["Jeera Rice", "Dal Tadka", "Salad / Papad / Pickle"],
+    "Snacks": ["Samosa", "Banana", "BBJ / Tea / Coffee"],
+    "Dinner": ["Onion Masala Rice", "Plain Rice", "Ice Cream"]
+  },
+  "Tuesday": {
+    "Breakfast": ["Masala Dosa", "Sambar / Chutney"],
+    "Lunch": ["Jeera Rice", "Dal Tadka", "Salad / Papad / Pickle"],
+    "Snacks": ["Samosa", "Banana", "BBJ / Tea / Coffee"],
+    "Dinner": ["Onion Masala Rice", "Plain Rice", "Ice Cream"]
+  },
+  "Wednesday": {
+    "Breakfast": ["Masala Dosa", "Sambar / Chutney"],
+    "Lunch": ["Jeera Rice", "Dal Tadka", "Salad / Papad / Pickle"],
+    "Snacks": ["Samosa", "Banana", "BBJ / Tea / Coffee"],
+    "Dinner": ["Onion Masala Rice", "Plain Rice", "Ice Cream"]
+  },
+  "Thursday": {
+    "Breakfast": ["Masala Dosa", "Sambar / Chutney"],
+    "Lunch": ["Jeera Rice", "Dal Tadka", "Salad / Papad / Pickle"],
+    "Snacks": ["Samosa", "Banana", "BBJ / Tea / Coffee"],
+    "Dinner": ["Onion Masala Rice", "Plain Rice", "Ice Cream"]
+  },
+  "Friday": {
+    "Breakfast": ["BBJ / Pickle"],
+    "Lunch": ["Veg Biryani", "Salad / Papad / Pickle"],
+    "Snacks": ["Veg Maggi", "Banana", "BBJ / Tea / Coffee"],
+    "Dinner": ["Tomato Rice", "Plain Rice", "Fruit Custard"]
+  },
+  "Saturday": {
+    "Breakfast": ["Masala Dosa", "Sambar / Chutney"],
+    "Lunch": ["Jeera Rice", "Dal Tadka", "Salad / Papad / Pickle"],
+    "Snacks": ["Samosa", "Banana", "BBJ / Tea / Coffee"],
+    "Dinner": ["Onion Masala Rice", "Plain Rice", "Ice Cream"]
+  },
+  "Sunday": {
+    "Breakfast": ["Aloo Paratha"],
+    "Lunch": ["Green Chilli / Lemon Slices", "Salad / Papad / Pickle"],
+    "Snacks": ["Pakoda", "Green Chutney", "Banana", "BBJ / Tea / Coffee"],
+    "Dinner": ["Veg Pulao", "Kala Jamun"]
+  }
+}
