@@ -1,0 +1,332 @@
+[
+  {
+    "Day": "Monday",
+    "Items": [
+      "Poha",
+      "Sev/Namkeen",
+      "Boiled Sweet Corn",
+      "Omlette",
+      "Banana/ CornFlakes",
+      "BBJ/Pickle",
+      "Coffee/BournVita"
+    ],
+    "Type": "Breakfast"
+  },
+  {
+    "Day": "Monday",
+    "Items": [
+      "MIX DAL",
+      "PLAIN ROTI  /  FULKA  ROTI",
+      "POORI",
+      "ALOO RASEWALLA",
+      "BUTTER MILK",
+      "BLACK CHANNA MASALA DRY",
+      " SALAD/ PAPAD  /  PICKLE",
+      "PLAIN RICE",
+      "GREEN CHILLI / LEMON SLICES "
+    ],
+    "Type": "Lunch"
+  },
+  {
+    "Day": "Monday",
+    "Items": [
+      "VADA PAV",
+      "GREEN CHILLY & RED DRYCHUTNEY",
+      "Banana/ CornFlakes",
+      "Coffee/BournVita"
+    ],
+    "Type": "Snacks"
+  },
+  {
+    "Day": "Monday",
+    "Items": [
+      "LEMON RICE",
+      "PLAIN RICE",
+      "DAL FRY",
+      "CHOLE MASALA",
+      "TOORAI CHANA DRY",
+      "PLAIN ROTI  /  FULKA  ROTI",
+      "GREEN CHILLI / LEMON SLICES ",
+      " SALAD/ PAPAD  /  PICKLE",
+      "KHEER"
+    ],
+    "Type": "Dinner"
+  },
+  {
+    "Day": "Tuesday",
+    "Items": [
+      "UTHAPPA",
+      "SAMBHAR/  CHUTNEY",
+      "Banana/ CornFlakes",
+      "BOILED PEANUTS ",
+      "Coffee/BournVita",
+      "BBJ/Pickle"
+    ],
+    "Type": "Breakfast"
+  },
+  {
+    "Day": "Tuesday",
+    "Items": [
+      "POORI",
+      "CHOLE",
+      "GREEN MOONG SPROUT",
+      "Banana/ CornFlakes",
+      "Coffee/BournVita",
+      "BAIGAN MASALA/MUSHROOM"
+    ],
+    "Type": "Lunch"
+  },
+  {
+    "Day": "Tuesday",
+    "Items": ["DAHI VADA", "BANANA", "Coffee/BournVita"],
+    "Type": "Snacks"
+  },
+  {
+    "Day": "Tuesday",
+    "Items": [
+      "CORN  RICE",
+      "PLAIN RICE",
+      "MOONG DAL",
+      "PANEER KHOLAPURI",
+      "PLAIN ROTI  /  FULKA  ROTI",
+      "GREEN CHILLI / LEMON SLICES ",
+      " SALAD/ PAPAD  /  PICKLE",
+      "GULABJAMUN"
+    ],
+    "Type": "Dinner"
+  },
+  {
+    "Day": "Wednesday",
+    "Items": [
+      "METHI PARATHA ",
+      "VEG KORMA",
+      "CHANNA MASALA (Onion& Tomato)",
+      "EGG BHURJI",
+      "BBJ/Pickle"
+    ],
+    "Type": "Breakfast"
+  },
+  {
+    "Day": "Wednesday",
+    "Items": [
+      "CURD RICE",
+      "MASOOR DAL",
+      "RASAM",
+      "CABBAGE CAPSICUM DRY",
+      "MANCHURIYAN GRAVI",
+      "PLAIN ROTI  /  FULKA  ROTI",
+      "LASSI",
+      "GREEN CHILLI / LEMON SLICES ",
+      "PAPAD  /  PICKLE"
+    ],
+    "Type": "Lunch"
+  },
+  {
+    "Day": "Wednesday",
+    "Items": [
+      "VEG  CUTLATE",
+      " GREEN & RED  CHUTNEY",
+      "BANANA",
+      "Coffee/BournVita"
+    ],
+    "Type": "Snacks"
+  },
+  {
+    "Day": "Wednesday",
+    "Items": [
+      "PLAIN RICE",
+      "DAL TADKA",
+      " KASHMIRI DUM ALLO",
+      "SOYA CHUNKS GRAVY",
+      "PLAIN ROTI  /  FULKA  ROTI",
+      "GREEN CHILLI / LEMON SLICES ",
+      "PAPAD  /  PICKLE",
+      "ICE CREAM  "
+    ],
+    "Type": "Dinner"
+  },
+  {
+    "Day": "Thursday",
+    "Items": [
+      "IDLI WADA ",
+      "SAMBHAR/  CHUTNEY",
+      "BLACK CHANNA SPROUTS",
+      "Banana/ CornFlakes",
+      "BBJ/Pickle",
+      "Coffee/BournVita"
+    ],
+    "Type": "Breakfast"
+  },
+  {
+    "Day": "Thursday",
+    "Items": [
+      "LEMON RICE",
+      "PLAIN RICE",
+      "DAL PALAK",
+      "SAMBHAR/  CHUTNEY",
+      "BHENDI FRY / KURKURE BHENDI",
+      "ALOO CAPSICUM  GRAVY",
+      "PLAIN ROTI  /  FULKA  ROTI",
+      "CURD",
+      "GREEN CHILLI / LEMON SLICES ",
+      " SALAD/ PAPAD  /  PICKLE",
+      "Dal Bati"
+    ],
+    "Type": "Lunch"
+  },
+  {
+    "Day": "Thursday",
+    "Items": ["PAV BHAJI", "BANANA", "Coffee/BournVita"],
+    "Type": "Snacks"
+  },
+  {
+    "Day": "Thursday",
+    "Items": [
+      "JEERA  RICE ",
+      "PLAIN RICE",
+      "DAL  LASOONI",
+      "PLAIN ROTI  /  FULKA  ROTI",
+      "GREEN CHILLI / LEMON SLICES ",
+      "PANEER CHILLI",
+      " SALAD/ PAPAD  /  PICKLE",
+      "FRUIT CUSTARD"
+    ],
+    "Type": "Dinner"
+  },
+  {
+    "Day": "Friday",
+    "Items": [
+      "POORI",
+      "CHOLE",
+      "GREEN MOONG SPROUT",
+      "Banana/ CornFlakes",
+      "BBJ/Pickle",
+      "Coffee/BournVita"
+    ],
+    "Type": "Breakfast"
+  },
+  {
+    "Day": "Friday",
+    "Items": [
+      "VEG BIRYANI",
+      "EGG BIRYANI",
+      "RAITHA",
+      "BLACK CHANNA GRAVY",
+      "PLAIN ROTI  /  FULKA  ROTI",
+      "NIMBUPANI/RASNA"
+    ],
+    "Type": "Lunch"
+  },
+  {"Day": "Friday", "Items": ["VEG MAGGI", "BANANA"], "Type": "Snacks"},
+  {
+    "Day": "Friday",
+    "Items": [
+      "TOMATO RICE",
+      "PLAIN RICE",
+      "MIX DAL",
+      "BAIGAN MASALA/MUSHROOM",
+      "RAJMA MASALA",
+      "PLAIN ROTI  /  FULKA  ROTI",
+      "GREEN CHILLI / LEMON SLICES ",
+      " SALAD/ PAPAD  /  PICKLE",
+      "ICE CREAM  "
+    ],
+    "Type": "Dinner"
+  },
+  {
+    "Day": "Saturday",
+    "Items": [
+      "MASALA DOSA",
+      "SAMBHAR/  CHUTNEY",
+      "MADKI SPROUTS",
+      "Banana/ CornFlakes",
+      "BBJ/Pickle",
+      "Coffee/BournVita"
+    ],
+    "Type": "Breakfast"
+  },
+  {
+    "Day": "Saturday",
+    "Items": [
+      "JEERA  RICE ",
+      "DAL TADKA",
+      "SAMBHAR/  CHUTNEY",
+      "GAWAR MASALA DRY",
+      "ALOO MUTTER(SEMI-LIQ)",
+      "PLAIN ROTI  /  FULKA  ROTI",
+      "BUTTER MILK",
+      "GREEN CHILLI / LEMON SLICES ",
+      " SALAD/ PAPAD  /  PICKLE"
+    ],
+    "Type": "Lunch"
+  },
+  {
+    "Day": "Saturday",
+    "Items": [
+      "SAMOSA",
+      "GREEN CHUTNEY & RED CHUTNEY",
+      "BANANA",
+      "Coffee/BournVita"
+    ],
+    "Type": "Snacks"
+  },
+  {
+    "Day": "Saturday",
+    "Items": [
+      "ONION MASALA RICE",
+      "PLAIN RICE",
+      "DAL PANCHRATNA",
+      "MATKI MASALA DRY",
+      "ALOO JEERA",
+      "PLAIN ROTI  /  FULKA  ROTI",
+      "GREEN CHILLI / LEMON SLICES ",
+      " SALAD/ PAPAD  /  PICKLE",
+      "GAJAR HALWA"
+    ],
+    "Type": "Dinner"
+  },
+  {
+    "Day": "Sunday",
+    "Items": [
+      "ALOO PARATHA",
+      "CURD",
+      "GREEN MOONG SPROUT",
+      "Banana/ CornFlakes",
+      "BBJ/Pickle",
+      "Coffee/BournVita"
+    ],
+    "Type": "Breakfast"
+  },
+  {
+    "Day": "Sunday",
+    "Items": [
+      "PLAIN RICE",
+      "TOOR DAL",
+      "EGG CURRY",
+      "PANEER TAWA MASALA",
+      "PLAIN ROTI  /  FULKA  ROTI",
+      "MANGO RASANA",
+      "GREEN CHILLI / LEMON SLICES ",
+      " SALAD/ PAPAD  /  PICKLE"
+    ],
+    "Type": "Lunch"
+  },
+  {
+    "Day": "Sunday",
+    "Items": ["PANIPOORI", "BANANA", "Coffee/BournVita"],
+    "Type": "Snacks"
+  },
+  {
+    "Day": "Sunday",
+    "Items": [
+      "VEG PULAO",
+      "RAITHA",
+      "MIX VEG DRY",
+      "PLAIN ROTI  /  FULKA  ROTI",
+      "GREEN CHILLI / LEMON SLICES ",
+      " SALAD/ PAPAD  /  PICKLE",
+      "ICE CREAM  "
+    ],
+    "Type": "Dinner"
+  }
+]
