@@ -3,6 +3,7 @@ import DrawerNavigator from './screens/DrawerNavigator';
 import messaging from '@react-native-firebase/messaging';
 import {View, Text, Alert} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
 function App() {
   useEffect(() => {
     getDeviceToken();
@@ -36,11 +37,6 @@ function App() {
       if (tkn !== null) {
         console.log("async tkn stored: ", tkn);
         setkn(JSON.parse(tkn));
-      }
-      const ath = await AsyncStorage.getItem('auth');
-      if (ath !== "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImVtYWlsIjoiMjEwMDEwMDI4QGlpdGRoLmFjLmluIiwicm9sZSI6Im1hbmFnZXIiLCJ0aW1lIjoxNjk5MjU1NjY0NTMwfSwiaWF0IjoxNjk5MjU1NjY0LCJleHAiOjE2OTkzNDIwNjR9.piAeLq6-R8ARKT25lXAkhVhMXBrEjlKsTNW67gGETfo") {
-        console.log("async tkn stored: ", ath);
-        setkn(JSON.parse(ath));
       }
     } catch (e) {
       console.log(e);

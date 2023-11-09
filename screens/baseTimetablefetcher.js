@@ -84,7 +84,7 @@ const Dashboard = () => {
           Timetable Data: {JSON.stringify(timetableData)}
         </Text>
       ) : (
-        <Text>Loading...</Text>
+        <Text style={{color:'#DDDDDD', margin:'5%'}}>Loading...</Text>
       )}
     </View>
   );

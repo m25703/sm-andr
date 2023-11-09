@@ -8,6 +8,7 @@ MERGED from C:\Users\mgupt\fml1\android\app\src\main\AndroidManifest.xml:1:1-26:
 MERGED from [com.facebook.flipper:flipper-network-plugin:0.182.0] C:\Users\mgupt\.gradle\caches\transforms-3\2ccb59e5daa9cc6215b09dc8b1205700\transformed\jetified-flipper-network-plugin-0.182.0\AndroidManifest.xml:8:1-15:12
 MERGED from [com.facebook.flipper:flipper-fresco-plugin:0.182.0] C:\Users\mgupt\.gradle\caches\transforms-3\86b8419bdc24c6b3c80f46a2a27c0e9e\transformed\jetified-flipper-fresco-plugin-0.182.0\AndroidManifest.xml:8:1-15:12
 MERGED from [com.facebook.flipper:flipper:0.182.0] C:\Users\mgupt\.gradle\caches\transforms-3\426f122c987f1f036bd238635db2dd0e\transformed\jetified-flipper-0.182.0\AndroidManifest.xml:8:1-18:12
+MERGED from [:react-native-svg] C:\Users\mgupt\fml1\node_modules\react-native-svg\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-7:12
 MERGED from [:react-native-async-storage_async-storage] C:\Users\mgupt\fml1\node_modules\@react-native-async-storage\async-storage\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-7:12
 MERGED from [:react-native-community_viewpager] C:\Users\mgupt\fml1\node_modules\@react-native-community\viewpager\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-7:12
 MERGED from [:react-native-firebase_auth] C:\Users\mgupt\fml1\node_modules\@react-native-firebase\auth\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-11:12
@@ -252,8 +253,8 @@ MERGED from [com.facebook.soloader:soloader:0.10.5] C:\Users\mgupt\.gradle\cache
 	android:appComponentFactory
 		ADDED from [androidx.core:core:1.8.0] C:\Users\mgupt\.gradle\caches\transforms-3\f91bddac5c5a1ea6f3ed77efc5a301a8\transformed\core-1.8.0\AndroidManifest.xml:24:18-86
 	android:label
-		ADDED from C:\Users\mgupt\fml1\android\app\src\main\AndroidManifest.xml:7:7-39
-		ADDED from C:\Users\mgupt\fml1\android\app\src\main\AndroidManifest.xml:7:7-39
+		ADDED from C:\Users\mgupt\fml1\android\app\src\main\AndroidManifest.xml:7:7-37
+		ADDED from C:\Users\mgupt\fml1\android\app\src\main\AndroidManifest.xml:7:7-37
 	tools:ignore
 		ADDED from C:\Users\mgupt\fml1\android\app\src\debug\AndroidManifest.xml:10:9-48
 	android:roundIcon
@@ -278,7 +279,7 @@ MERGED from [com.facebook.soloader:soloader:0.10.5] C:\Users\mgupt\.gradle\cache
 activity#com.fml1.MainActivity
 ADDED from C:\Users\mgupt\fml1\android\app\src\main\AndroidManifest.xml:13:7-24:18
 	android:label
-		ADDED from C:\Users\mgupt\fml1\android\app\src\main\AndroidManifest.xml:15:9-41
+		ADDED from C:\Users\mgupt\fml1\android\app\src\main\AndroidManifest.xml:15:9-39
 	android:launchMode
 		ADDED from C:\Users\mgupt\fml1\android\app\src\main\AndroidManifest.xml:17:9-40
 	android:windowSoftInputMode
@@ -309,6 +310,8 @@ MERGED from [com.facebook.flipper:flipper-fresco-plugin:0.182.0] C:\Users\mgupt\
 MERGED from [com.facebook.flipper:flipper-fresco-plugin:0.182.0] C:\Users\mgupt\.gradle\caches\transforms-3\86b8419bdc24c6b3c80f46a2a27c0e9e\transformed\jetified-flipper-fresco-plugin-0.182.0\AndroidManifest.xml:11:5-13:41
 MERGED from [com.facebook.flipper:flipper:0.182.0] C:\Users\mgupt\.gradle\caches\transforms-3\426f122c987f1f036bd238635db2dd0e\transformed\jetified-flipper-0.182.0\AndroidManifest.xml:11:5-13:41
 MERGED from [com.facebook.flipper:flipper:0.182.0] C:\Users\mgupt\.gradle\caches\transforms-3\426f122c987f1f036bd238635db2dd0e\transformed\jetified-flipper-0.182.0\AndroidManifest.xml:11:5-13:41
+MERGED from [:react-native-svg] C:\Users\mgupt\fml1\node_modules\react-native-svg\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
+MERGED from [:react-native-svg] C:\Users\mgupt\fml1\node_modules\react-native-svg\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
 MERGED from [:react-native-async-storage_async-storage] C:\Users\mgupt\fml1\node_modules\@react-native-async-storage\async-storage\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
 MERGED from [:react-native-async-storage_async-storage] C:\Users\mgupt\fml1\node_modules\@react-native-async-storage\async-storage\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
 MERGED from [:react-native-community_viewpager] C:\Users\mgupt\fml1\node_modules\@react-native-community\viewpager\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44

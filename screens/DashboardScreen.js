@@ -3,7 +3,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Text,
-  FlatList,
+  FlatList, 
   Icon,
   Image,
 } from 'react-native';
@@ -21,76 +21,10 @@ const DashboardScreen = () => {
   const [combinedMealData, setCombinedMealData] = useState(null);
   const [days, setDays] = useState({
     Friday: {
-      Breakfast: [
-        'Coffee/BournVita',
-      ],
-      Dinner: [
-        'PLAIN RICE',
-      ],
-      Lunch: [
-        'PLAIN ROTI  /  FULKA  ROTI',
-      ],
-      Snacks: ['BANANA'],
-    },
-    Monday: {Breakfast: [
-        'Coffee/BournVita',
-      ],
-      Dinner: [
-        'PLAIN RICE',
-      ],
-      Lunch: [
-        'PLAIN ROTI  /  FULKA  ROTI',
-      ],
-      Snacks: ['BANANA'],
-    },
-    Saturday: {Breakfast: [
-      'Coffee/BournVita',
-    ],
-    Dinner: [
-      'PLAIN RICE',
-    ],
-    Lunch: [
-      'PLAIN ROTI  /  FULKA  ROTI',
-    ],
-    Snacks: ['BANANA'],
-    },
-    Thursday: {Breakfast: [
-      'Coffee/BournVita',
-    ],
-    Dinner: [
-      'PLAIN RICE',
-    ],
-    Lunch: [
-      'PLAIN ROTI  /  FULKA  ROTI',
-    ],
-    Snacks: ['BANANA'],
-    },
-    Tuesday: {Breakfast: [
-      'Coffee/BournVita',
-    ],
-    Dinner: [
-      'PLAIN RICE',
-    ],
-    Lunch: [
-      'PLAIN ROTI  /  FULKA  ROTI',
-    ],
-    Snacks: ['BANANA'],
-    },
-    Wednesday: {Breakfast: [
-      'Coffee/BournVita',
-    ],
-    Dinner: [
-      'PLAIN RICE',
-    ],
-    Lunch: [
-      'PLAIN ROTI  /  FULKA  ROTI',
-    ],
-    Snacks: ['BANANA'],
-    },
-  });
-  const [ser, setSer] = useState('');
-  const reqDate = new Date();
-  console.log(reqDate.toLocaleTimeString());
+      Breakfast: ['Coffee/BournVita',],Dinner: ['PLAIN RICE',],Lunch: ['ROTI',],Snacks: ['BANANA'],},Monday: {Breakfast: ['Coffee/BournVita',],Dinner: ['PLAIN RICE',],Lunch: ['ROTI',],Snacks: ['BANANA'],},Saturday: {Breakfast: ['Coffee/BournVita',],Dinner: ['PLAIN RICE',],Lunch: ['ROTI',],Snacks: ['BANANA'],},Thursday: {Breakfast: ['Coffee/BournVita',],Dinner: ['PLAIN RICE',],Lunch: ['ROTI',],Snacks: ['BANANA'],},Tuesday: {Breakfast: ['Coffee/BournVita',],Dinner: ['PLAIN RICE',],Lunch: ['ROTI',],Snacks: ['BANANA'],},Wednesday: {Breakfast: ['Coffee/BournVita',],Dinner: ['PLAIN RICE',],Lunch: ['ROTI',],Snacks: ['BANANA'],},});
+const [ser, setSer] = useState('');
+const reqDate = new Date();
+  // console.log(reqDate.toLocaleTimeString());
   useEffect(() => {}, []);
 
   function getMealTime() {
@@ -184,6 +118,28 @@ const DashboardScreen = () => {
     };
   }, []);
 
+  const [userRole, setUserRole] = useState(null);
+
+  // Use useEffect to retrieve the role from AsyncStorage when the screen loads
+  useEffect(() => {
+    async function fetchUserRole() {
+      try {
+        // Retrieve the role from AsyncStorage
+        const role = await AsyncStorage.getItem('userRole');
+        if (role !== null) {
+          // If the role is found in AsyncStorage, set it in the state variable
+          setUserRole(role);
+          console.log(role);
+        }
+      } catch (error) {
+        console.error('Error fetching user role:', error);
+      }
+    }
+
+    // Call the function to fetch the role
+    fetchUserRole();
+  }, []);
+
   const loadPage = async () => {
     try {
       await GoogleSignin.hasPlayServices();
@@ -204,7 +160,7 @@ const DashboardScreen = () => {
             axios
               .post(apiUrl, userData)
               .then(response => {
-                console.log('dashboardScreen: res token', response.data.token);
+                // console.log('dashboardScreen: res token', response.data.token);
                 const apiUrl =
                   'https://smartmess.iitdh.ac.in/api/user/dashboard/timetable';
                 const headers = {
@@ -216,16 +172,16 @@ const DashboardScreen = () => {
                   .get(apiUrl, {headers})
                   .then(response => {
                     setTimetableData(response.data);
-                    console.log(JSON.stringify(response.data));
+                    // console.log(JSON.stringify(response.data));
                     const filteredResult = filterItemsData(response.data);
-                    console.log(filteredResult);
+                    // console.log(filteredResult);
                     const menuStructure = generateMenuStructure(filteredResult);
-                    console.log(
-                      JSON.stringify(menuStructure, null, 2),
-                      'menuStructure set',
-                    );
+                    // console.log(
+                    //   JSON.stringify(menuStructure, null, 2),
+                    //   'menuStructure set',
+                    // );
                     setDays(menuStructure);
-                    console.log(days, 'days set');
+                    // console.log(days, 'days set');
                     const currentDayIndex = new Date().getDay();
                     const currentDayName = [
                       'Sunday',
@@ -236,7 +192,7 @@ const DashboardScreen = () => {
                       'Friday',
                       'Saturday',
                     ][currentDayIndex];
-                    console.log(currentDayName);
+                    // console.log(currentDayName);
                     const km = mealTypes.map(mealType => ({
                       mealType,
                       items: menuStructure[currentDayName][mealType],

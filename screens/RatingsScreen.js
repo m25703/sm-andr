@@ -1,14 +1,11 @@
-import React, {useEffect, useContext, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   View,
-  TextInput,
-  Button,
-  TouchableOpacity,
+  Image,
   Text,
   FlatList,
 } from 'react-native';
-import {Picker} from '@react-native-picker/picker';
 import {
   GoogleSignin,
   statusCodes,
@@ -16,66 +13,56 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-const RatingsScreen = ({navigation}) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userInfo, setUserInfo] = useState(null);
-  const [foodItems, setFoodItems] = useState([]);
-  const [parsedData, setParsedData] = useState('');
-  const [timetableData, setTimetableData] = useState(null);
+const RatingsScreen = ({ navigation }) => {
+  const [fooditemdata, setfooditemdata] = useState(null);
 
   const loadPage = async () => {
     try {
       await GoogleSignin.hasPlayServices();
-      const usrInfo = await GoogleSignin.signIn();
-      GoogleSignin.signIn()
-        .then(userInfo => {
-          const currentUser = GoogleSignin.getTokens().then(res => {
-            const apiUrl = 'https://smartmess.iitdh.ac.in/api/auth/signin/android';
-            const userData = {
-              Email: userInfo.user.email,
-              Username: userInfo.user.name,
-              First_Name: userInfo.user.givenName,
-              Last_Name: userInfo.user.familyName,
-              Image: userInfo.user.photo,
-            };
-            axios
-            .post(`${apiUrl}`, userData)
-            .then(response => {
-              console.log('ns res token', response.data.token);
-              const apiUrl = 'https://smartmess.iitdh.ac.in/api/user/dashboard/timetable';
-              const headers = {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${response.data.token}`
-              };
-              axios.get(apiUrl, { headers })
-                .then(response => {
-                  setTimetableData(response.data);
-                })
-                .catch(error => {
-                  console.error('ns: Error fetching data:', error);
-                });
-            })
-            .catch(error => {
-              console.error('ns: Error:', error);
-            });
-          });
-        })
-        .catch(error => {
-          console.error('.....' + JSON.stringify(error));
-        });
+      const userInfo = await GoogleSignin.signIn();
+
+      const apiUrl = 'https://smartmess.iitdh.ac.in/api/auth/signin/android';
+      const userData = {
+        Email: userInfo.user.email,
+        Username: userInfo.user.name,
+        First_Name: userInfo.user.givenName,
+        Last_Name: userInfo.user.familyName,
+        Image: userInfo.user.photo,
+      };
+
+      const response = await axios.post(apiUrl, userData);
+      console.log('ns res token', response.data.token);
+      const tkn = response.data.token;
+
+      const foodItemsUrl = 'https://smartmess.iitdh.ac.in/api/manager/dashboard/allFoodItems';
+      const headers = {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${tkn}`,
+      };
+
+      const foodItemsResponse = await axios.get(foodItemsUrl, { headers });
+      setfooditemdata(foodItemsResponse.data);
+      console.log(foodItemsResponse.data);
+
+      const itemId = "6547c18c0593ef2642c59302";
+      const ratingApiUrl = 'https://smartmess.iitdh.ac.in/api/manager/dashboard/getItemRating';
+      const ratingHeaders = {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${tkn}`,
+      };
 
       try {
-        const userInfoString = JSON.stringify(usrInfo);
-        await AsyncStorage.setItem('isLoggedIn', JSON.stringify(true));
-        await AsyncStorage.setItem('userInfo', userInfoString);
-      } catch (ee) {
-        console.error('ns: Error storing user info:', ee);
+        const ratingResponse = await axios.post(ratingApiUrl, { itemId }, { headers: ratingHeaders });
+        const filteredRatingResponses = ratingResponse.data.filter(item => item.Rating !== 0);
+        setRatingResponses(filteredRatingResponses);
+        console.log(`Ratings for Item ${itemId}:`, filteredRatingResponses);
+      } catch (error) {
+        console.error(`Error fetching ratings for Item ${itemId}:`, error);
       }
-      console.log('ns: Successfully Loaded Menu Data');
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         console.error(error, error.code);
-      } else if (error.code === statusCodes.IN_PROGRESS) {        
+      } else if (error.code === statusCodes.IN_PROGRESS) {
         console.error(error, error.code);
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
         console.error(error, error.code);
@@ -86,111 +73,46 @@ const RatingsScreen = ({navigation}) => {
   };
 
   useEffect(() => {
-    loadPage()
-    }, []);
-
-
-
-  const _retrieveData = async () => {
-    try {
-      const user = await AsyncStorage.getItem('userInfo');
-      if (user !== null) {
-        setUserInfo(user);
-        setIsLoggedIn(true);
-      }
-      setParsedData(JSON.parse(user));
-    } catch (error) {
-      console.error('Error retrieving user info:', error);
-    }
-  };
-
-  useEffect(() => {
-    _retrieveData();
-
-    // const apiUrl = 'http://192.168.27.21:3000';
-    // axios
-    //   .get(`${apiUrl}/foodItems`)
-    //   .then(response => {
-    //     const foodItems = response.data.foodItems;
-    //     setFoodItems(foodItems);
-    //     console.log('Successfully fetched items');
-    //   })
-    //   .catch(error => {
-    //     console.log('Error fetching food items', error);
-    //   });
+    loadPage();
   }, []);
 
-  const [rating, setRating] = useState('');
-  const [selectedItem, setSelectedItem] = useState('');
-
-  const handleStarPress = star => {
-    setRating(star);
-  };
-
-  const handlePostSubmit = () => {
-    if (!userInfo) {
-      console.error('User info is missing.');
-      return;
-    }
-
-    const postData = {
-      User: parsedData.user.id,
-      Rating: rating,
-      FoodItem: selectedItem,
-    };
-
-    if (!rating || !selectedItem) {
-      console.error('Rating and FoodItem are required.');
-      return;
-    }
-
-    const apiUrl = 'http://192.168.80.21:3000';
-    axios
-      .post(`${apiUrl}/addRating`, postData)
-      .then(response => {
-        console.log(response.data);
-      })
-      .catch(error => {
-        console.error('Error creating post', error);
-      });
-  };
+  const [ratingResponses, setRatingResponses] = useState([]);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Timetable Dashboard</Text>
-      {timetableData ? (
-        <Text style={styles.data}>
-          Timetable Data: {JSON.stringify(timetableData)}
-        </Text>
+      <Text
+        style={{
+          fontSize: 28,
+          fontWeight: 'bold',
+          color: '#212B36',
+          margin: '2%',
+          marginBottom: '5%'
+        }}>
+        Ratings
+      </Text>
+      {ratingResponses ? (
+        <FlatList
+          data={ratingResponses}
+          keyExtractor={(item) => item._id}
+          renderItem={({ item }) => (
+            <View style={styles.foodItemContainer}>
+              <Image
+                source={{ uri: fooditemdata.find((itemData) => itemData.Id === item.FoodItem)?.Img }}
+                style={styles.foodItemImage}
+              />
+              <View style={styles.foodItemInfo}>
+                <Text style={styles.foodItemName}>{fooditemdata.find((itemData) => itemData.Id === item.FoodItem)?.Name}</Text>
+                <View style={styles.ratingContainer}>
+                  <Text style={styles.foodItemRatingLabel}>Rating:</Text>
+                  <Text style={styles.foodItemRatingValue}>{item.Rating.toFixed(2)}</Text>
+                </View>
+              </View>
+            </View>
+          )}
+        />
       ) : (
-        <Text>Loading...</Text>
+        <Text style={{color:'#DDDDDD', margin:'5%'}}>Loading...</Text>
       )}
-      <View style={styles.starContainer}>
-        {[1, 2, 3, 4, 5].map(starValue => (
-          <TouchableOpacity
-            key={starValue}
-            onPress={() => handleStarPress(starValue)}>
-            <Text
-              style={{
-                fontSize: 30,
-                color: starValue <= rating ? 'gold' : 'gray',
-              }}>
-              {starValue <= rating ? '★' : '☆'}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      <Picker
-        selectedValue={selectedItem}
-        onValueChange={(itemValue, itemIndex) => setSelectedItem(itemValue)}
-        style={styles.input}>
-        <Picker.Item label="Select an item" value="" />
-        {foodItems.map((item, index) => (
-          <Picker.Item key={index} label={item.Name} value={item.Name} />
-        ))}
-      </Picker>
-      <Button onPress={handlePostSubmit} title="Post Rating" color="#007BFF" />
     </View>
   );
 };
@@ -198,21 +120,49 @@ const RatingsScreen = ({navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    padding: 16,
+    backgroundColor: '#F9F9F9',
+    color: 'black',
   },
-  starContainer: {
+  heading: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  foodItemContainer: {
     flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 16,
   },
-  input: {
-    width: '80%',
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 20,
+  foodItemImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 8,
+    marginRight: 12,
+  },
+  foodItemInfo: {
+    flex: 1,
+    backgroundColor: 'white',
+    padding: '2%',
+    borderRadius: 5,
+  },
+  foodItemName: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'black',
+  },
+  ratingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  foodItemRatingLabel: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginRight: 4,
+    color: 'black',
+  },
+  foodItemRatingValue: {
+    fontSize: 20,
+    color: 'black',
   },
 });
 

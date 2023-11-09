@@ -47,8 +47,8 @@
 25        android:debuggable="true"
 26        android:icon="@mipmap/ic_launcher"
 26-->C:\Users\mgupt\fml1\android\app\src\main\AndroidManifest.xml:8:7-41
-27        android:label="@string/app_name"
-27-->C:\Users\mgupt\fml1\android\app\src\main\AndroidManifest.xml:7:7-39
+27        android:label="Smart Mess App"
+27-->C:\Users\mgupt\fml1\android\app\src\main\AndroidManifest.xml:7:7-37
 28        android:roundIcon="@mipmap/ic_launcher_round"
 28-->C:\Users\mgupt\fml1\android\app\src\main\AndroidManifest.xml:9:7-52
 29        android:theme="@style/AppTheme"
@@ -69,8 +69,8 @@
 36-->C:\Users\mgupt\fml1\android\app\src\main\AndroidManifest.xml:16:9-118
 37            android:exported="true"
 37-->C:\Users\mgupt\fml1\android\app\src\main\AndroidManifest.xml:19:9-32
-38            android:label="@string/app_name"
-38-->C:\Users\mgupt\fml1\android\app\src\main\AndroidManifest.xml:15:9-41
+38            android:label="Smart Mess App"
+38-->C:\Users\mgupt\fml1\android\app\src\main\AndroidManifest.xml:15:9-39
 39            android:launchMode="singleTask"
 39-->C:\Users\mgupt\fml1\android\app\src\main\AndroidManifest.xml:17:9-40
 40            android:windowSoftInputMode="adjustResize" >

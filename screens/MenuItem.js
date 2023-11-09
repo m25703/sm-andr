@@ -4,7 +4,7 @@ import { View, Image, Text, StyleSheet } from 'react-native';
 const MenuItem = ({ menu }) => (
   <View style={styles.menuItem}>
     <Image source={{ uri: menu.Image }} style={styles.image} />
-    <Text style={{ fontWeight: 'bold', fontSize: 14, margin: 5 }}>{menu.Name}</Text>
+    <Text style={{ fontWeight: 'bold', fontSize: 14, margin: 5, color:'darkslategrey' }}>{menu.Name}</Text>
   </View>
 );
 

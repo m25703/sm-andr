@@ -1,74 +1,105 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import { View, Text, StyleSheet } from 'react-native';
+import {
+  GoogleSignin,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
-const FeedbackScreen = () => {
-  
-  const [feedback, setFeedback] = useState('');
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userInfo, setUserInfo] = useState(null);
-  const _retrieveData = async () => {
+const Dashboard = () => {
+  const [timetableData, setTimetableData] = useState(null);
+  const [rol, setRol] = useState(null);
+
+  const setRole = async (role) =>{
+    await AsyncStorage.setItem('role', role);
+    console.log(AsyncStorage.getItem('role'));
+    console.log(AsyncStorage.getAllKeys);
+  }
+
+  const loadPage = async () => {
     try {
-      const data = await AsyncStorage.getItem('isLoggedIn');
-      if (data !== null) {
-        setIsLoggedIn(JSON.parse(data)); 
+      await GoogleSignin.hasPlayServices();
+      const usrInfo = await GoogleSignin.signIn();
+      GoogleSignin.signIn()
+        .then(userInfo => {
+          const currentUser = GoogleSignin.getTokens().then(res => {
+            const apiUrl = 'https://smartmess.iitdh.ac.in/api/auth/signin/android';
+            const userData = {
+              Email: userInfo.user.email,
+              Username: userInfo.user.name,
+              First_Name: userInfo.user.givenName,
+              Last_Name: userInfo.user.familyName,
+              Image: userInfo.user.photo,
+            };
+            axios
+            .post(`${apiUrl}`, userData)
+            .then(response => {
+              console.log('ns res token', response.data.token);
+              const apiUrl = 'https://smartmess.iitdh.ac.in/api/user/dashboard/timetable';
+              const headers = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${response.data.token}`
+              };
+              console.log(response.data);
+              console.log(response.data.user);
+              setRole(response.data.user.Role);
+              console.log(rol);
+              axios.get(apiUrl, { headers })
+                .then(response => {
+                  setTimetableData(response.data);
+                  
+                })
+                .catch(error => {
+                  console.error('ns: Error fetching data:', error);
+                });
+                
+            })
+            .catch(error => {
+              console.error('ns: Error:', error);
+            });
+          });
+        })
+        .catch(error => {
+          console.error('.....' + JSON.stringify(error));
+        });
+
+      try {
+        const userInfoString = JSON.stringify(usrInfo);
+        await AsyncStorage.setItem('isLoggedIn', JSON.stringify(true));
+        await AsyncStorage.setItem('userInfo', userInfoString);
+        
+      } catch (ee) {
+        console.error('ns: Error storing user info:', ee);
       }
-      const user = await AsyncStorage.getItem('userInfo');
-      const userInfoString = await AsyncStorage.getItem('userInfo');
-      if (userInfoString !== null) {
-        const userInfo = JSON.parse(userInfoString);
-        setUserInfo(userInfo);
-      }
+      console.log('ns: Successfully Loaded Menu Data');
     } catch (error) {
-      console.error('Error retrieving user info:', error);
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        console.error(error, error.code);
+      } else if (error.code === statusCodes.IN_PROGRESS) {        
+        console.error(error, error.code);
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        console.error(error, error.code);
+      } else {
+        console.error(error, error.code);
+      }
     }
   };
+
   useEffect(() => {
-    _retrieveData();
-  }, []);
-  const handleFeedbackChange = (text) => {
-    setFeedback(text);
-  };
-
-  const handleSubmitFeedback = () => {
-    // You can handle the submission of feedback here, e.g., send it to a server
-    console.log("Submitted feedback:", feedback);
-    // Reset the feedback input
-    setFeedback('');
-    // You can also show a success message to the user
-  };
-
-  const handleCameraIconPress = () => {
-    // Handle the camera icon press
-  };
-
-  const handlePhotoIconPress = () => {
-    // Handle the photo icon press
-  };
+    loadPage()
+    }, []);
 
   return (
     <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        multiline
-        placeholder="Type your feedback here..."
-        value={feedback}
-        onChangeText={handleFeedbackChange}
-      />
-      <View style={styles.iconsContainer}>
-        <TouchableOpacity style={styles.icon} onPress={handleCameraIconPress}>
-          <Icon name="camera" size={24} color="#333" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.icon} onPress={handlePhotoIconPress}>
-          <Icon name="photo" size={24} color="#333" />
-        </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={handleSubmitFeedback}>
-        <Text style={styles.buttonText}>Submit</Text>
-      </TouchableOpacity>
-      </View>
-      <Text>{isLoggedIn ? 'yes' : 'no'}</Text>
-      
+      <Text style={styles.heading}>Timetable Dashboard</Text>
+      {timetableData ? (
+        <Text style={styles.data}>
+          Timetable Data: {JSON.stringify(timetableData)}
+        </Text>
+      ) : (
+        <Text style={{color:'#DDDDDD', margin:'5%'}}>Loading...</Text>
+      )}
     </View>
   );
 };
@@ -76,47 +107,16 @@ const FeedbackScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#F5F5F5',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  title: {
+  heading: {
     fontSize: 24,
-    fontWeight: 'bold',
     marginBottom: 20,
   },
-  input: {
-    height: 120,
-    borderWidth: 1,
-    borderColor: '#CCCCCC',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 20,
-    backgroundColor: '#ffffff',
-  },
-  button: {
-    backgroundColor: '#007AFF',
-    borderRadius: 5,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    alignSelf: 'flex-end',
-    margin: 10,
-  },
-  buttonText: {
-    color: '#FFF',
-    fontSize: 18,
-  },
-  iconsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginTop: 20,
-
-  },
-  icon: {
-    backgroundColor: '#E5E5E5',
-    borderRadius: 5,
-    padding: 10,
-    margin:10,
+  data: {
+    fontSize: 16,
   },
 });
 
-export default FeedbackScreen;
+export default Dashboard;

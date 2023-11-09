@@ -1,278 +1,119 @@
 import React, {useState} from 'react';
 import {
   View,
-  Text,
-  Button,
-  Input,
-  Image,
-  TouchableOpacity,
   TextInput,
   StyleSheet,
+  Text,
+  Button,
+  TouchableOpacity,
 } from 'react-native';
-import {Overlay} from 'react-native-elements';
-import {Picker} from '@react-native-picker/picker';
+import {
+  GoogleSignin,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
-const YourComponent = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [nameError, setNameError] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
+const FeedbackPage = () => {
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
 
-  const handleValidation = () => {
-    let isValid = true;
+  const handleSubmit = async () => {
+    if (title != '' && description != '') {
+      console.log(title, description);
+      try {
+        await GoogleSignin.hasPlayServices();
+        const usrInfo = await GoogleSignin.signIn();
+        GoogleSignin.signIn()
+          .then(userInfo => {
+            const currentUser = GoogleSignin.getTokens().then(res => {
+              const apiUrl =
+                'https://smartmess.iitdh.ac.in/api/auth/signin/android';
+              const userData = {
+                Email: userInfo.user.email,
+                Username: userInfo.user.name,
+                First_Name: userInfo.user.givenName,
+                Last_Name: userInfo.user.familyName,
+                Image: userInfo.user.photo,
+              };
+              axios
+                .post(`${apiUrl}`, userData)
+                .then(response => {
+                  console.log('ns res token', response.data.token);
+                  const apiUrl =
+                    'https://smartmess.iitdh.ac.in/api/manager/dashboard/floatFeedbackForm';
+                  const headers = {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${response.data.token}`,
+                  };
+                  axios
+                    .post(apiUrl, {title, description}, {headers})
+                    .then(response => {
+                      console.log(response);
+                    })
+                    .catch(error => {
+                      console.error('ns: Error fetching data:', error);
+                    });
+                })
+                .catch(error => {
+                  console.error('ns: Error:', error);
+                });
+            });
+          })
+          .catch(error => {
+            console.error('.....' + JSON.stringify(error));
+          });
 
-    if (name.trim() === '') {
-      isValid = false;
-      setNameError('Please input name of Food Item');
-    } else {
-      setNameError('');
-    }
-
-    if (email.trim() === '') {
-      isValid = false;
-      setEmailError('Please input the link to image of Food Item');
-    } else {
-      setEmailError('');
-    }
-
-    if (password.trim() === '') {
-      isValid = false;
-      setPasswordError('Please input category of Food Item');
-    } else {
-      setPasswordError('');
-    }
-
-    return isValid;
-  };
-
-  const handleSubmit = () => {
-    if (handleValidation()) {
-      // Handle form submission
-      // This function is called when all fields are filled
-      // You can perform your action here, e.g., sending data to a server
-    }
-  };
-
-  return (
-    <View style={styles.container}>
-      <View>
-      <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Text style={styles.asterisk}> * </Text><Text style={styles.label}>Name of Food Item</Text>
-        </View>
-        
-        <TextInput
-          style={styles.input}
-          value={name}
-          onChangeText={text => setName(text)}
-        />
-        {nameError ? (
-          <Text style={styles.errorText}>{nameError}</Text>
-        ) : (
-          <Text style={styles.errorText}> </Text>
-        )}
-      </View>
-
-      <View>
-      <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Text style={styles.asterisk}> * </Text><Text style={styles.label}>Image of Food Item</Text>
-        </View>
-        
-        <TextInput
-          style={styles.input}
-          value={email}
-          onChangeText={text => setEmail(text)}
-        />
-        {emailError ? (
-          <Text style={styles.errorText}>{emailError}</Text>
-        ) : (
-          <Text style={styles.errorText}> </Text>
-        )}
-      </View>
-
-      <View>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Text style={styles.asterisk}> * </Text>
-          <Text style={styles.label}>Food Item Category</Text>
-        </View>
-
-        <View
-          style={{
-            borderWidth: 1,
-            backgroundColor: 'white',
-            borderRadius: 5,
-            marginBottom: '5%',
-            borderColor: '#D9D9D9',
-            height: 50,
-          }}>
-          <Picker
-            selectedValue={password}
-            onValueChange={itemValue => setPassword(itemValue)}>
-            <Picker.Item label="1" value="1" />
-            <Picker.Item label="2" value="2" />
-            <Picker.Item label="3" value="3" />
-          </Picker>
-        </View>
-        {passwordError ? (
-          <Text style={styles.errorText}>{passwordError}</Text>
-        ) : null}
-      </View>
-
-      <TouchableOpacity
-        style={{ ...styles.button, width: '30%' }}
-        onPress={handleSubmit}
-      >
-        <Text style={styles.buttonText}>Create</Text>
-      </TouchableOpacity>
-    </View>
-  );
-};
-
-const YourComponent2 = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [nameError, setNameError] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-
-  const handleValidation = () => {
-    let isValid = true;
-
-    if (name.trim() === '') {
-      isValid = false;
-      setNameError('Please input name of Food Item');
-    } else {
-      setNameError('');
-    }
-
-    if (email.trim() === '') {
-      isValid = false;
-      setEmailError('Please input the link to image of Food Item');
-    } else {
-      setEmailError('');
-    }
-
-    if (password.trim() === '') {
-      isValid = false;
-      setPasswordError('Please input category of Food Item');
-    } else {
-      setPasswordError('');
-    }
-
-    return isValid;
-  };
-
-  const handleSubmit = () => {
-    if (handleValidation()) {
-      // Handle form submission
-      // This function is called when all fields are filled
-      // You can perform your action here, e.g., sending data to a server
+        try {
+          const userInfoString = JSON.stringify(usrInfo);
+          await AsyncStorage.setItem('isLoggedIn', JSON.stringify(true));
+          await AsyncStorage.setItem('userInfo', userInfoString);
+        } catch (ee) {
+          console.error('ns: Error storing user info:', ee);
+        }
+        console.log('ns: Successfully Loaded Menu Data');
+      } catch (error) {
+        if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+          console.error(error, error.code);
+        } else if (error.code === statusCodes.IN_PROGRESS) {
+          console.error(error, error.code);
+        } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+          console.error(error, error.code);
+        } else {
+          console.error(error, error.code);
+        }
+      }
     }
   };
 
   return (
     <View style={styles.container}>
-      <View>
-      <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Text style={styles.asterisk}> * </Text><Text style={styles.label}>Day</Text>
-        </View>
-        
-        <View
-          style={{
-            borderWidth: 1,
-            backgroundColor: 'white',
-            borderRadius: 5,
-            margin: '2%',
-            borderColor: '#D9D9D9',
-            height: 50,
-          }}>
-          <Picker
-            selectedValue={name}
-            onValueChange={itemValue => setName(itemValue)}>
-            <Picker.Item label="Monday" value="Monday" />
-            <Picker.Item label="Tuesday" value="Tuesday" />
-            <Picker.Item label="Wednesday" value="Wednesday" />
-            <Picker.Item label="Thursday" value="Thursday" />
-            <Picker.Item label="Friday" value="Friday" />
-            <Picker.Item label="Saturday" value="Saturday" />
-            <Picker.Item label="Sunday" value="Sunday" />
-          </Picker>
-        </View>
-
-        
-        {nameError ? (
-          <Text style={styles.errorText}>{nameError}</Text>
-        ) : (
-          <Text style={styles.errorText}> </Text>
-        )}
-      </View>
-
-      <View>
-      <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Text style={styles.asterisk}> * </Text><Text style={styles.label}>Meal type</Text>
-        </View>
-        
-        <View
-          style={{
-            borderWidth: 1,
-            backgroundColor: 'white',
-            borderRadius: 5,
-            margin: '2%',
-            borderColor: '#D9D9D9',
-            height: 50,
-          }}>
-          <Picker
-            selectedValue={email}
-            onValueChange={itemValue => setEmail(itemValue)}>
-            <Picker.Item label="Breakfast" value="Breakfast" />
-            <Picker.Item label="Lunch" value="Lunch" />
-            <Picker.Item label="Snacks" value="Snacks" />
-            <Picker.Item label="Dinner" value="Dinner" />
-          </Picker>
-        </View>
-
-        {emailError ? (
-          <Text style={styles.errorText}>{emailError}</Text>
-        ) : (
-          <Text style={styles.errorText}> </Text>
-        )}
-      </View>
-
-      <View>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Text style={styles.asterisk}> * </Text>
-          <Text style={styles.label}>Food Items</Text>
-        </View>
-
-        <View
-          style={{
-            borderWidth: 1,
-            backgroundColor: 'white',
-            borderRadius: 5,
-            margin: '2%',
-            borderColor: '#D9D9D9',
-            height: 50,
-          }}>
-          <Picker
-            selectedValue={password}
-            onValueChange={itemValue => setPassword(itemValue)}>
-            <Picker.Item label="1" value="1" />
-            <Picker.Item label="2" value="2" />
-            <Picker.Item label="3" value="3" />
-          </Picker>
-        </View>
-        {passwordError ? (
-          <Text style={styles.errorText}>{passwordError}</Text>
-        ) : null}
-      </View>
-
+      <Text
+        style={{
+          fontSize: 28,
+          fontWeight: 'bold',
+          color: '#212B36',
+          margin: '5%',
+        }}>
+        Feedback Form
+      </Text>
+      <TextInput
+        style={styles.titleInput}
+        placeholder="Title *"
+        value={title}
+        onChangeText={text => setTitle(text)}
+      />
+      <TextInput
+        style={styles.descriptionInput}
+        placeholder="Description *"
+        value={description}
+        onChangeText={text => setDescription(text)}
+        multiline={true}
+      />
       <TouchableOpacity
-        style={{ ...styles.button, width: '30%' }}
-        onPress={handleSubmit}
-      >
-        <Text style={styles.buttonText}>Create</Text>
+        style={{...styles.button, width: '30%'}}
+        onPress={handleSubmit}>
+        <Text style={styles.buttonText}>Submit</Text>
       </TouchableOpacity>
     </View>
   );
@@ -280,41 +121,44 @@ const YourComponent2 = () => {
 
 const styles = StyleSheet.create({
   container: {
-    margin: 20,
-  },
-  label: {
-    fontSize: 16,
-    marginBottom: 5,
-    color: 'black',
-  },
-  asterisk: {
-    color: 'red',
-    fontSize: 16,
-    marginBottom: 5,
-    marginLeft: 5, 
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#D9D9D9',
-    marginBottom: 10,
+    padding: 16,
     backgroundColor: 'white',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 7,
-    margin: '2%',
-    borderRadius: 5,
+    flex: 1,
   },
-  errorText: {
-    color: 'red',
-    margin: 1
+  titleInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 10,
+  },
+  descriptionInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 10,
+    height: '50%',
+  },
+  submitButton: {
+    backgroundColor: '#2065D1',
+    borderRadius: 4,
+    paddingVertical: 12,
+    alignItems: 'center',
+    margin: 10,
+    alignSelf: 'left',
+  },
+  submitText: {
+    color: 'white',
+    fontSize: 16,
   },
   button: {
     backgroundColor: '#1677FF', // Change the background color as needed
     borderRadius: 10, // Use a percentage value for border radius
     justifyContent: 'center',
     alignItems: 'center',
-    alignSelf: 'center',
+    alignSelf: 'left',
     padding: 10,
+    marginTop: '2%',
   },
   buttonText: {
     color: 'white',
@@ -322,120 +166,4 @@ const styles = StyleSheet.create({
   },
 });
 
-const CustomButton = ({title, onPress}) => {
-  return (
-    <TouchableOpacity
-      style={{
-        width: '70%',
-        backgroundColor: 'white',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 7,
-        margin: '2%',
-        borderWidth: 1,
-        borderColor: '#D9D9D9',
-        borderRadius: 5,
-      }}
-      onPress={onPress}>
-      <Text style={{color: 'black'}}>{title}</Text>
-    </TouchableOpacity>
-  );
-};
-
-const ComplaintsScreen = () => {
-  const [visible, setVisible] = useState(true);
-  const [formVisible, setFormVisible] = useState(false);
-  const [imageVisible, setImageVisible] = useState(false);
-
-  const toggleHelloBox = () => {
-    setVisible(!visible);
-    setFormVisible(false);
-    setImageVisible(false);
-  };
-
-  const toggleForm = () => {
-    setVisible(false);
-    setFormVisible(!formVisible);
-    setImageVisible(false);
-  };
-
-  const toggleImage = () => {
-    setVisible(false);
-    setFormVisible(false);
-    setImageVisible(!imageVisible);
-  };
-
-  return (
-    <View
-      style={{
-        margin: 0,
-        backgroundColor: 'white',
-        flex: 1,
-      }}>
-      <View
-        style={{
-          flexDirection: 'column',
-          justifyContent: 'space-around',
-          marginBottom: '5%',
-        }}>
-        <CustomButton title="Create A New Food Item" onPress={toggleHelloBox} />
-        <CustomButton title="Add Food To Time Table" onPress={toggleForm} />
-        <CustomButton
-          title="Delete Food From Time Table"
-          onPress={toggleImage}
-        />
-      </View>
-
-      {visible && (
-        <View>
-          <Text
-            style={{
-              fontSize: 28,
-              fontWeight: 'bold',
-              color: '#212B36',
-              margin: '5%',
-            }}>
-            {' '}
-            Create New Food Item{' '}
-          </Text>
-          <YourComponent />
-
-        </View>
-      )}
-
-      {formVisible && (
-        <View>
-          <Text
-            style={{
-              fontSize: 28,
-              fontWeight: 'bold',
-              color: '#212B36',
-              margin: '5%',
-            }}>
-            {' '}
-            Add Food To Time Table
-          </Text>
-          <YourComponent2 />
-
-        </View>
-      )}
-
-      {imageVisible && (
-        <View>
-          <Text
-            style={{
-              fontSize: 28,
-              fontWeight: 'bold',
-              color: '#212B36',
-              margin: '5%',
-            }}>
-            {' '}
-            Delete Food From Time Table{' '}
-          </Text>
-        </View>
-      )}
-    </View>
-  );
-};
-
-export default ComplaintsScreen;
+export default FeedbackPage;

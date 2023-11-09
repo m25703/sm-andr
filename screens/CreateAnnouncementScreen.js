@@ -1,110 +1,169 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import React, {useState} from 'react';
+import {
+  View,
+  TextInput,
+  StyleSheet,
+  Text,
+  Button,
+  TouchableOpacity,
+} from 'react-native';
+import {
+  GoogleSignin,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
-const CreateAnnouncementScreen = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userInfo, setUserInfo] = useState(null);
-  const _retrieveData = async () => {
-    try {
-      const data = await AsyncStorage.getItem('isLoggedIn');
-      if (data !== null) {
-        setIsLoggedIn(JSON.parse(data)); 
-      }
-      const user = await AsyncStorage.getItem('userInfo');
-      const userInfoString = await AsyncStorage.getItem('userInfo');
-      if (userInfoString !== null) {
-        const userInfo = JSON.parse(userInfoString);
-        setUserInfo(userInfo);
-      }
-    } catch (error) {
-      console.error('Error retrieving user info:', error);
-    }
-  };
-  useEffect(() => {
-    _retrieveData();
-  }, []);
-  const [announcementText, setAnnouncementText] = useState('');
-  const [notification, setNotification] = useState('');
+const FeedbackPage = () => {
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
 
-  const handleAnnouncementSubmit = () => {
-    if (announcementText.trim() !== '') {
-      setNotification('Announcement created successfully');
-      setAnnouncementText('');
-    } else {
-      setNotification('Please enter valid announcement text');
+  const handleSubmit = async () => {
+    if (title != '' && description != '') {
+      console.log(title, description);
+      try {
+        await GoogleSignin.hasPlayServices();
+        const usrInfo = await GoogleSignin.signIn();
+        GoogleSignin.signIn()
+          .then(userInfo => {
+            const currentUser = GoogleSignin.getTokens().then(res => {
+              const apiUrl =
+                'https://smartmess.iitdh.ac.in/api/auth/signin/android';
+              const userData = {
+                Email: userInfo.user.email,
+                Username: userInfo.user.name,
+                First_Name: userInfo.user.givenName,
+                Last_Name: userInfo.user.familyName,
+                Image: userInfo.user.photo,
+              };
+              axios
+                .post(`${apiUrl}`, userData)
+                .then(response => {
+                  console.log('ns res token', response.data.token);
+                  const apiUrl =
+                    'https://smartmess.iitdh.ac.in/api/manager/dashboard/floatFeedbackForm';
+                  const headers = {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${response.data.token}`,
+                  };
+                  axios
+                    .post(apiUrl, {title, description}, {headers})
+                    .then(response => {
+                      console.log(response);
+                    })
+                    .catch(error => {
+                      console.error('ns: Error fetching data:', error);
+                    });
+                })
+                .catch(error => {
+                  console.error('ns: Error:', error);
+                });
+            });
+          })
+          .catch(error => {
+            console.error('.....' + JSON.stringify(error));
+          });
+
+        try {
+          const userInfoString = JSON.stringify(usrInfo);
+          await AsyncStorage.setItem('isLoggedIn', JSON.stringify(true));
+          await AsyncStorage.setItem('userInfo', userInfoString);
+        } catch (ee) {
+          console.error('ns: Error storing user info:', ee);
+        }
+        console.log('ns: Successfully Loaded Menu Data');
+      } catch (error) {
+        if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+          console.error(error, error.code);
+        } else if (error.code === statusCodes.IN_PROGRESS) {
+          console.error(error, error.code);
+        } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+          console.error(error, error.code);
+        } else {
+          console.error(error, error.code);
+        }
+      }
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}></Text>
-      
-      {/* Form to create announcement */}
-      <View style={styles.formContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your announcement"
-          value={announcementText}
-          onChangeText={text => setAnnouncementText(text)}
-        />
-        <TouchableOpacity style={styles.submitButton} onPress={handleAnnouncementSubmit}>
-          <Text style={styles.submitButtonText}>Create Announcement</Text>
-        </TouchableOpacity>
-      </View>
-      
-      {/* Notification */}
-      <View style={styles.notificationContainer}>
-        <Text style={styles.notificationText}>{notification}</Text>
-      </View>
+      <Text
+        style={{
+          fontSize: 28,
+          fontWeight: 'bold',
+          color: '#212B36',
+          margin: '5%',
+        }}>
+        Announcement
+      </Text>
+      <TextInput
+        style={styles.titleInput}
+        placeholder="Title *"
+        value={title}
+        onChangeText={text => setTitle(text)}
+      />
+      <TextInput
+        style={styles.descriptionInput}
+        placeholder="Description *"
+        value={description}
+        onChangeText={text => setDescription(text)}
+        multiline={true}
+      />
+      <TouchableOpacity
+        style={{...styles.button, width: '30%'}}
+        onPress={handleSubmit}>
+        <Text style={styles.buttonText}>Submit</Text>
+      </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    padding: 16,
+    backgroundColor: 'white',
     flex: 1,
-    padding: 20,
-    backgroundColor: '#FFFFFF',
   },
-  heading: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  formContainer: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 10,
-    padding: 20,
-    marginBottom: 20,
-    elevation: 3,
-  },
-  input: {
-    borderBottomWidth: 1,
-    borderColor: '#CCC',
+  titleInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 10,
     marginBottom: 10,
-    paddingVertical: 5,
+  },
+  descriptionInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 10,
+    height: '50%',
   },
   submitButton: {
-    backgroundColor: '#007AFF',
-    borderRadius: 5,
-    paddingVertical: 10,
+    backgroundColor: '#2065D1',
+    borderRadius: 4,
+    paddingVertical: 12,
     alignItems: 'center',
+    margin: 10,
+    alignSelf: 'left',
   },
-  submitButtonText: {
+  submitText: {
     color: 'white',
-    fontWeight: 'bold',
-  },
-  notificationContainer: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 10,
-    padding: 20,
-    elevation: 3,
-  },
-  notificationText: {
     fontSize: 16,
-    color: '#007AFF',
-    textAlign: 'center',
+  },
+  button: {
+    backgroundColor: '#1677FF', // Change the background color as needed
+    borderRadius: 10, // Use a percentage value for border radius
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'left',
+    padding: 10,
+    marginTop: '2%',
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
   },
 });
 
-export default CreateAnnouncementScreen;
+export default FeedbackPage;

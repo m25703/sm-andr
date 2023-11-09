@@ -1,4 +1,4 @@
-import {View, Text, Image, Button, StyleSheet} from 'react-native';
+import {View, Text, Image, Button, StyleSheet, TouchableOpacity} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {
   GoogleSignin,
@@ -7,7 +7,6 @@ import {
 } from '@react-native-google-signin/google-signin';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import {set} from 'mongoose';
 
 const SettingsScreen = ({navigation}) => {
   const [userInfo, setUserInfo] = useState(null);
@@ -19,84 +18,16 @@ const SettingsScreen = ({navigation}) => {
   }, []);
 
 
-
-  const getTimeTable = async tkn => {
-    const apiUrl = 'https://smartmess.iitdh.ac.in/api/user/dashboard/timetable';
-    console.log('tkn', tkn);
-    let response = await fetch(apiUrl, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${tkn}`,
-      },
-    });
-
-    response = await response.json();
-    console.log('getTimeTable res: ', response);
-    
-    console.log("getTimeTable res 0:", response[0].Items[0]);
-    return response;
-  };
-
-  const [tkn, setkn] = useState(null);
-  const setTokenAsync = async () => {
-    try {
-      if(tkn!=null) {
-      await AsyncStorage.setItem('tkn', tkn); // Use await here
-      console.log('trying to set', tkn);
-      const storedToken = await AsyncStorage.getItem('tkn'); // Use await here
-      console.log('actual:', storedToken); // Use the storedToken variable
-      // navigation.navigate('Main'); 
-    }
-    } catch (error) {
-      console.log('Error setting or retrieving async token:', error);
-    }
-  };
-
-  const [storedData, setStoredData] = useState(null);
-
-  // useEffect(() => {
-  //   // Retrieve data from AsyncStorage when the component mounts
-  //   getDataFromAsyncStorage();
-  // }, []);
-
-  const setDataInAsyncStorage = async (value) => {
-    try {
-      await AsyncStorage.setItem('myKey', value);
-      console.log('Data saved successfully');
-    } catch (error) {
-      console.error('Error saving data:', error);
-    }
-  };
-
-  const getDataFromAsyncStorage = async () => {
-    try {
-      const value = await AsyncStorage.getItem('myKey');
-      if (value !== null) {
-        setStoredData(value);
-        console.log('Data retrieved successfully:', value);
-      } else {
-        console.log('Data does not exist in AsyncStorage');
-      }
-    } catch (error) {
-      console.error('Error retrieving data:', error);
-    }
-  };
-  
-
   const signIn = async () => {
     try {
       await GoogleSignin.hasPlayServices();
       const usrInfo = await GoogleSignin.signIn();
       setUserInfo(usrInfo);
-      navigation.navigate('Main');
+  
       GoogleSignin.signIn()
         .then(userInfo => {
           const currentUser = GoogleSignin.getTokens().then(res => {
-            // console.log(res); //<-------Get accessToken
-            // console.log(userInfo);
             const apiUrl = 'https://smartmess.iitdh.ac.in/api/auth/signin/android';
-            // const apiUrl = 'http://192.168.27.21:8001/api/auth/signin/android';
             const userData = {
               Email: userInfo.user.email,
               Username: userInfo.user.name,
@@ -104,25 +35,28 @@ const SettingsScreen = ({navigation}) => {
               Last_Name: userInfo.user.familyName,
               Image: userInfo.user.photo,
             };
+  
             axios
-            .post(`${apiUrl}`, userData)
-            .then(response => {
-              console.log('res token', response.data.token);
-              // setkn(response.data.token);
-              // setDataInAsyncStorage(response.data.token);
-              // setTokenAsync(); // Call setTokenAsync after setting tkn
-              navigation.navigate('Main'); // Move the navigation here
-
-            })
-            .catch(error => {
-              console.error('Error:', error);
-            });
+              .post(`${apiUrl}`, userData)
+              .then(response => {
+                const token = response.data.token;
+                const role = response.data.user.Role; // Assuming the role is in response.data.user.Role
+  
+                // Store the role in AsyncStorage
+                AsyncStorage.setItem('userRole', role);
+                console.log(AsyncStorage.getItem('userRole'));
+                // Continue with navigation
+                navigation.navigate('Main');
+              })
+              .catch(error => {
+                console.error('Error:', error);
+              });
           });
         })
         .catch(error => {
           console.log('.....' + JSON.stringify(error));
         });
-
+  
       try {
         const userInfoString = JSON.stringify(usrInfo);
         await AsyncStorage.setItem('isLoggedIn', JSON.stringify(true));
@@ -130,7 +64,7 @@ const SettingsScreen = ({navigation}) => {
       } catch (ee) {
         console.error('Error storing user info:', ee);
       }
-      // console.log('User Info: ', usrInfo);
+  
       console.log('Successfully Logged In');
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
@@ -144,6 +78,7 @@ const SettingsScreen = ({navigation}) => {
       }
     }
   };
+  
   const signout = async () => {
     try {
       await GoogleSignin.signOut();
@@ -162,16 +97,15 @@ const SettingsScreen = ({navigation}) => {
       <View style={{ ...styles.container, backgroundColor: '#FFFFFF', margin: 0 }}>
         <Image
           source={require('./lgo.png')}
-          style={{ ...styles.topLeftImage, aspectRatio: 1, margin: '3%' }}
+          style={{ height:150, aspectRatio: 1, margin: '3%' }}
         />
-        {userInfo != null && <Text>{userInfo.user.name}</Text>}
-        {userInfo != null && <Text>{userInfo.user.email}</Text>}
+        <View style={{backgroundColor:'#EEEEEE', margin:'2%', borderRadius:5, alignItems:'center'}}>
+        {userInfo != null && <Text style={{color:'black', margin:'2%'}}>{userInfo.user.name}</Text>}
+        {userInfo != null && <Text style={{color:'black', margin:'2%'}}>{userInfo.user.email}</Text>}
         {userInfo != null && (
           <Image source={{ uri: userInfo.user.photo }} style={styles.image} />
         )}
-        <Text style={{ ...styles.signInText, textAlign: 'left' }}>
-          Sign in using Google
-        </Text>
+        </View>
         <View style={styles.googleSignInContainer}>
           <GoogleSigninButton
             style={styles.googleSignInButton}
@@ -182,7 +116,9 @@ const SettingsScreen = ({navigation}) => {
             }}
           />
         </View>
-        <Button onPress={signout} title='Sign Out'/>
+        <TouchableOpacity style={styles.button} onPress={signout}>
+        <Text style={styles.buttonText}>Sign Out</Text>
+      </TouchableOpacity>
       </View>
     );
   };
@@ -196,15 +132,14 @@ const SettingsScreen = ({navigation}) => {
       backgroundColor: '#FFFFFF'
     },
     topLeftImage: {
-      position: 'absolute',
-      top: 0,
-      left: 0,
       height: 50, 
       width: 50,
     },
     image: {
       height: 70, 
       width: 70,
+      borderRadius: 70,
+      margin:'2%'
     },
     signInText: {
       fontSize: 24,
@@ -218,6 +153,22 @@ const SettingsScreen = ({navigation}) => {
     googleSignInButton: {
       width: 312,
       height: 60,
+    },
+    button: {
+      width: 308,
+      height: 56,
+      backgroundColor: 'white',
+      borderWidth: 2,
+      margin: '2%',
+      borderRadius: 1,
+      borderColor: 'grey',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    buttonText: {
+      color: 'darkslategrey',
+      fontSize: 13,
+      fontWeight: 'bold',
     },
   });
   

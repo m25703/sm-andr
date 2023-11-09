@@ -156,7 +156,7 @@ const MenuScreen = () => {
       )}
     />
   ) : (
-    <Text>Loading...</Text>
+    <Text style={{color:'#DDDDDD', margin:'5%'}}>Loading...</Text>
   );
 };
 const styles = StyleSheet.create({
