@@ -3,7 +3,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Text,
-  FlatList, 
+  FlatList,
   Icon,
   Image,
 } from 'react-native';
@@ -21,40 +21,43 @@ const DashboardScreen = () => {
   const [combinedMealData, setCombinedMealData] = useState(null);
   const [days, setDays] = useState({
     Friday: {
-      Breakfast: ['Coffee/BournVita',],Dinner: ['PLAIN RICE',],Lunch: ['ROTI',],Snacks: ['BANANA'],},Monday: {Breakfast: ['Coffee/BournVita',],Dinner: ['PLAIN RICE',],Lunch: ['ROTI',],Snacks: ['BANANA'],},Saturday: {Breakfast: ['Coffee/BournVita',],Dinner: ['PLAIN RICE',],Lunch: ['ROTI',],Snacks: ['BANANA'],},Thursday: {Breakfast: ['Coffee/BournVita',],Dinner: ['PLAIN RICE',],Lunch: ['ROTI',],Snacks: ['BANANA'],},Tuesday: {Breakfast: ['Coffee/BournVita',],Dinner: ['PLAIN RICE',],Lunch: ['ROTI',],Snacks: ['BANANA'],},Wednesday: {Breakfast: ['Coffee/BournVita',],Dinner: ['PLAIN RICE',],Lunch: ['ROTI',],Snacks: ['BANANA'],},});
-const [ser, setSer] = useState('');
-const reqDate = new Date();
-  // console.log(reqDate.toLocaleTimeString());
+      Breakfast: ['Item'],
+      Dinner: ['Item'],
+      Lunch: ['Item'],
+      Snacks: ['Item'],
+    },
+    Monday: {
+      Breakfast: ['Item'],
+      Dinner: ['Item'],
+      Lunch: ['Item'],
+      Snacks: ['Item'],
+    },
+    Saturday: {
+      Breakfast: ['Item'],
+      Dinner: ['Item'],
+      Lunch: ['Item'],
+      Snacks: ['Item'],
+    },
+    Thursday: {
+      Breakfast: ['Item'],
+      Dinner: ['Item'],
+      Lunch: ['Item'],
+      Snacks: ['Item'],
+    },
+    Tuesday: {
+      Breakfast: ['Item'],
+      Dinner: ['Item'],
+      Lunch: ['Item'],
+      Snacks: ['Item'],
+    },
+    Wednesday: {
+      Breakfast: ['Item'],
+      Dinner: ['Item'],
+      Lunch: ['Item'],
+      Snacks: ['Item'],
+    },
+  });
   useEffect(() => {}, []);
-
-  function getMealTime() {
-    const currentTime = new Date();
-    const hours = currentTime.getHours();
-    const minutes = currentTime.getMinutes();
-
-    if (hours >= 7 && hours < 10) {
-      setSer('Breakfast');
-    } else if (hours >= 12 && hours < 15) {
-      setSer('Lunch');
-    } else if (hours >= 16 && hours < 18) {
-      setSer('Snacks');
-    } else if (hours >= 19 && hours < 21) {
-      setSer('Dinner');
-    } else {
-      setSer('');
-    }
-  }
-
-  useEffect(() => {
-    getMealTime();
-    const interval = setInterval(() => {
-      getMealTime();
-    }, 6000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const [timetableData, setTimetableData] = useState(null);
   const filterItemsData = menuData => {
     const filteredData = [];
     for (const entry of menuData) {
@@ -92,54 +95,6 @@ const reqDate = new Date();
 
     return menuStructure;
   }
-
-  const [isRefreshing, setIsRefreshing] = useState(false);
-
-  // Your data and renderItem logic
-
-  const handleRefresh = () => {
-    setIsRefreshing(true);
-
-    // Fetch new data or refresh existing data
-    // Once the data is updated, set isRefreshing to false
-
-    setTimeout(() => {
-      setIsRefreshing(false); // Simulating data fetch completion
-    }, 2000);
-  };
-
-  useEffect(() => {
-    const refreshTimer = setTimeout(() => {
-      handleRefresh(); // Trigger the refresh action
-    }, 5000); // Refresh after 5 seconds
-
-    return () => {
-      clearTimeout(refreshTimer); // Clear the timer to avoid unwanted refreshes
-    };
-  }, []);
-
-  const [userRole, setUserRole] = useState(null);
-
-  // Use useEffect to retrieve the role from AsyncStorage when the screen loads
-  useEffect(() => {
-    async function fetchUserRole() {
-      try {
-        // Retrieve the role from AsyncStorage
-        const role = await AsyncStorage.getItem('userRole');
-        if (role !== null) {
-          // If the role is found in AsyncStorage, set it in the state variable
-          setUserRole(role);
-          console.log(role);
-        }
-      } catch (error) {
-        console.error('Error fetching user role:', error);
-      }
-    }
-
-    // Call the function to fetch the role
-    fetchUserRole();
-  }, []);
-
   const loadPage = async () => {
     try {
       await GoogleSignin.hasPlayServices();
@@ -149,7 +104,6 @@ const reqDate = new Date();
           const currentUser = GoogleSignin.getTokens().then(res => {
             const apiUrl =
               'https://smartmess.iitdh.ac.in/api/auth/signin/android';
-            // const apiUrl = 'http://192.168.27.21:8001/api/auth/signin/android';
             const userData = {
               Email: userInfo.user.email,
               Username: userInfo.user.name,
@@ -160,9 +114,8 @@ const reqDate = new Date();
             axios
               .post(apiUrl, userData)
               .then(response => {
-                // console.log('dashboardScreen: res token', response.data.token);
                 const apiUrl =
-                  'https://smartmess.iitdh.ac.in/api/user/dashboard/timetable';
+                  'https://smartmess.iitdh.ac.in/api/manager/dashboard/timetable';
                 const headers = {
                   'Content-Type': 'application/json',
                   Authorization: `Bearer ${response.data.token}`,
@@ -171,17 +124,9 @@ const reqDate = new Date();
                 axios
                   .get(apiUrl, {headers})
                   .then(response => {
-                    setTimetableData(response.data);
-                    // console.log(JSON.stringify(response.data));
                     const filteredResult = filterItemsData(response.data);
-                    // console.log(filteredResult);
                     const menuStructure = generateMenuStructure(filteredResult);
-                    // console.log(
-                    //   JSON.stringify(menuStructure, null, 2),
-                    //   'menuStructure set',
-                    // );
                     setDays(menuStructure);
-                    // console.log(days, 'days set');
                     const currentDayIndex = new Date().getDay();
                     const currentDayName = [
                       'Sunday',
@@ -192,7 +137,6 @@ const reqDate = new Date();
                       'Friday',
                       'Saturday',
                     ][currentDayIndex];
-                    // console.log(currentDayName);
                     const km = mealTypes.map(mealType => ({
                       mealType,
                       items: menuStructure[currentDayName][mealType],
@@ -282,7 +226,7 @@ const reqDate = new Date();
     Dinner: {bgColor: '#FFE7D9', textColor: '#9F495D'},
   };
 
-  return days ? (
+  return combinedMealData ? (
     <View style={styles.pageContainer}>
       <Text
         style={{
@@ -307,7 +251,7 @@ const reqDate = new Date();
       />
     </View>
   ) : (
-    <Text>Loading...</Text>
+    <Text style={{color: 'black', margin: '5%'}}>Loading...</Text>
   );
 };
 

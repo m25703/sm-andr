@@ -23,7 +23,7 @@ const SettingsScreen = ({navigation}) => {
       await GoogleSignin.hasPlayServices();
       const usrInfo = await GoogleSignin.signIn();
       setUserInfo(usrInfo);
-  
+      navigation.navigate('Main');
       GoogleSignin.signIn()
         .then(userInfo => {
           const currentUser = GoogleSignin.getTokens().then(res => {
@@ -46,7 +46,7 @@ const SettingsScreen = ({navigation}) => {
                 AsyncStorage.setItem('userRole', role);
                 console.log(AsyncStorage.getItem('userRole'));
                 // Continue with navigation
-                navigation.navigate('Main');
+                // navigation.navigate('Main');
               })
               .catch(error => {
                 console.error('Error:', error);
@@ -95,10 +95,7 @@ const SettingsScreen = ({navigation}) => {
   };
   return (
       <View style={{ ...styles.container, backgroundColor: '#FFFFFF', margin: 0 }}>
-        <Image
-          source={require('./lgo.png')}
-          style={{ height:150, aspectRatio: 1, margin: '3%' }}
-        />
+        
         <View style={{backgroundColor:'#EEEEEE', margin:'2%', borderRadius:5, alignItems:'center'}}>
         {userInfo != null && <Text style={{color:'black', margin:'2%'}}>{userInfo.user.name}</Text>}
         {userInfo != null && <Text style={{color:'black', margin:'2%'}}>{userInfo.user.email}</Text>}
@@ -106,11 +103,16 @@ const SettingsScreen = ({navigation}) => {
           <Image source={{ uri: userInfo.user.photo }} style={styles.image} />
         )}
         </View>
+        <Image
+          source={require('./lgo.png')}
+          style={{ height:150, aspectRatio: 1, margin: '3%' }}
+        />
         <View style={styles.googleSignInContainer}>
           <GoogleSigninButton
             style={styles.googleSignInButton}
             size={GoogleSigninButton.Size.Wide}
             color={GoogleSigninButton.Color.Light}
+            
             onPress={() => {
               signIn();
             }}
@@ -153,20 +155,25 @@ const SettingsScreen = ({navigation}) => {
     googleSignInButton: {
       width: 312,
       height: 60,
+      elevation: 2, 
+      shadowColor: 'grey',
     },
     button: {
       width: 308,
       height: 56,
       backgroundColor: 'white',
-      borderWidth: 2,
+      borderWidth: 0.5,
+      elevation: 2, 
+      shadowColor: 'black',
+      shadowOpacity: 1,
       margin: '2%',
       borderRadius: 1,
-      borderColor: 'grey',
+      borderColor: '#CCCCCC',
       alignItems: 'center',
       justifyContent: 'center',
     },
     buttonText: {
-      color: 'darkslategrey',
+      color: 'grey',
       fontSize: 13,
       fontWeight: 'bold',
     },

@@ -1,131 +1,121 @@
-import React, { useState, useContext, useEffect } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  SafeAreaView,
-  TextInput,
-  TouchableOpacity,
-} from "react-native";
-import { UserType } from "../UserContext";
-import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import jwt_decode from "jwt-decode";
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 
 const GuestFeedbackScreen = () => {
-  const { userId, setUserId } = useState("test2");
-  useEffect(() => {
-    const fetchUsers = async () => {
-      const token = await AsyncStorage.getItem("authToken");
-      const decodedToken = jwt_decode(token);
-      const userId = decodedToken.userId;
-      setUserId(userId);
-    };
+  const [ratings, setRatings] = useState({
+    br: 0,
+    lu: 0,
+    sn: 0,
+    di: 0,
+    hy: 0,
+    me: 0,
+  });
 
-    fetchUsers();
-  }, []);
-
-  const [content, setContent] = useState("");
-
-  const handlePostSubmit = () => {
-    if (content.length === 0) return;
-
-    const postData = {
-      userId,
-    };
-
-    if (content) {
-      postData.content = content;
-    }
-
-    axios
-      .post("http://10.196.118.102:3000/create-post", postData)
-      .then((response) => {
-        setContent("");
-      })
-      .catch((error) => {
-        console.log("error creating post", error);
-      });
+  const handleStarPress = (type, star) => {
+    setRatings((prevRatings) => ({
+      ...prevRatings,
+      [type]: star,
+    }));
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.userContainer}>
-        <Image
-          style={styles.profileImage}
-          source={{
-            uri: "https://cdn-icons-png.flaticon.com/128/149/149071.png",
-          }}
-        />
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.title}>Feedback</Text>
+      <View style={styles.feedbackContainer}>
+        {feedbackItems.map((item) => (
+          <FeedbackItem
+            key={item.type}
+            type={item.type}
+            imageSource={item.imageSource}
+            rating={ratings[item.type]}
+            handleStarPress={handleStarPress}
+          />
+        ))}
       </View>
-
-      <View style={styles.inputContainer}>
-        <TextInput
-          value={content}
-          onChangeText={(text) => setContent(text)}
-          placeholderTextColor="black"
-          placeholder="Enter your feedback..."
-          multiline
-          style={styles.textInput}
-        />
-      </View>
-
-      <TouchableOpacity
-        style={styles.postButton}
-        onPress={handlePostSubmit}
-      >
-        <Text style={styles.buttonText}>Post</Text>
+      <TouchableOpacity style={styles.button}>
+        <Text style={styles.buttonText}>Rate</Text>
       </TouchableOpacity>
-    </SafeAreaView>
+    </ScrollView>
   );
 };
+
+const FeedbackItem = ({ type, imageSource, rating, handleStarPress }) => (
+  <View style={styles.feedbackItem}>
+    <Image source={imageSource} style={styles.displayImage} />
+    <View style={styles.starContainer}>
+      {[1, 2, 3, 4, 5].map((starValue) => (
+        <TouchableOpacity
+          key={starValue}
+          onPress={() => handleStarPress(type, starValue)}
+        >
+          <Text
+            style={{
+              fontSize: 24,
+              color: starValue <= rating ? 'gold' : 'gray',
+            }}
+          >
+            {starValue <= rating ? '★' : '☆'}
+          </Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  </View>
+);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: "#E0E0E0",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: 'white',
+    
+    
   },
-  userContainer: {
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#212B36',
+    paddingVertical: 20,
+    backgroundColor: 'white',
+    textAlign: 'left',
+  },
+  feedbackContainer: {
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  feedbackItem: {
+    flexDirection: 'column',
+    alignItems: 'center',
     marginBottom: 20,
   },
-  profileImage: {
-    width: 100,
+  displayImage: {
     height: 100,
-    borderRadius: 50,
+    width: 100,
+    marginRight: 10,
   },
-  inputContainer: {
-    width: "100%",
-    marginBottom: 20,
+  starContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  textInput: {
-    padding: 15,
-    backgroundColor: "white",
-    borderRadius: 10,
-    shadowColor: "rgba(0, 0, 0, 0.1)",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 1,
-    shadowRadius: 4,
-    elevation: 5,
-    width: "80%",
-    alignSelf:"center"
-  },
-  postButton: {
-    backgroundColor: "#007AFF",
-    borderRadius: 10,
-    padding: 15,
-    alignItems: "center",
+  button: {
+    backgroundColor: '#3498db',
+    paddingVertical: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginTop: 20,
   },
   buttonText: {
-    color: "white",
-    fontWeight: "bold",
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 18,
   },
 });
+
+const feedbackItems = [
+  { type: 'br', imageSource: require('./br_feedback.png') },
+  { type: 'lu', imageSource: require('./lu_feedback.png') },
+  { type: 'sn', imageSource: require('./sn_feedback.png') },
+  { type: 'di', imageSource: require('./di_feedback.png') },
+  { type: 'me', imageSource: require('./me_feedback.png') },
+  { type: 'hy', imageSource: require('./hy_feedback.png') },
+];
 
 export default GuestFeedbackScreen;

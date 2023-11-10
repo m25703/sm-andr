@@ -82,7 +82,7 @@ const MenuScreen = () => {
               .then(response => {
                 console.log('ns res token', response.data.token);
                 const apiUrl =
-                  'https://smartmess.iitdh.ac.in/api/user/dashboard/timetable';
+                  'https://smartmess.iitdh.ac.in/api/manager/dashboard/timetable';
                 const headers = {
                   'Content-Type': 'application/json',
                   Authorization: `Bearer ${response.data.token}`,

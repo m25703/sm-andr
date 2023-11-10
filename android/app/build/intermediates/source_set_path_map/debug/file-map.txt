@@ -58,4 +58,5 @@ com.fml1.app-packaged_res-56 C:\Users\mgupt\fml1\node_modules\react-native-gestu
 com.fml1.app-packaged_res-57 C:\Users\mgupt\fml1\node_modules\react-native-reanimated\android\build\intermediates\packaged_res\debug
 com.fml1.app-packaged_res-58 C:\Users\mgupt\fml1\node_modules\react-native-safe-area-context\android\build\intermediates\packaged_res\debug
 com.fml1.app-packaged_res-59 C:\Users\mgupt\fml1\node_modules\react-native-screens\android\build\intermediates\packaged_res\debug
-com.fml1.app-packaged_res-60 C:\Users\mgupt\fml1\node_modules\react-native-vector-icons\android\build\intermediates\packaged_res\debug
+com.fml1.app-packaged_res-60 C:\Users\mgupt\fml1\node_modules\react-native-svg\android\build\intermediates\packaged_res\debug
+com.fml1.app-packaged_res-61 C:\Users\mgupt\fml1\node_modules\react-native-vector-icons\android\build\intermediates\packaged_res\debug
