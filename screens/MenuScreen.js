@@ -1,10 +1,20 @@
 import React, {useState, useEffect, Suspense, lazy} from 'react';
-import {FlatList, Text, View, Button, StyleSheet} from 'react-native';
+import {
+  FlatList,
+  Text,
+  View,
+  Button,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
 import {
   GoogleSignin,
   statusCodes,
   GoogleSigninButton,
 } from '@react-native-google-signin/google-signin';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faAngleDown, faAngleUp, faAngleRight } from '@fortawesome/free-solid-svg-icons';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
@@ -13,52 +23,6 @@ const MenuItem = lazy(() => import('./MenuItem'));
 
 const MenuScreen = () => {
   const [timetableData, setTimetableData] = useState(null);
-  const filterItemsData = menuData => {
-    // Initialize an empty array to store the filtered data
-    const filteredData = [];
-
-    // Iterate through each menu entry
-    for (const entry of menuData) {
-      // Extract the relevant information
-      const {Day, Type, Items} = entry;
-
-      if (Items && Array.isArray(Items)) {
-        // Extract item names from the 'Items' array and filter out any null or undefined values
-        const itemNames = Items.map(item => (item && item.Name) || null).filter(
-          Boolean,
-        );
-
-        // Push the filtered data to the result array
-        filteredData.push({
-          Day,
-          Type,
-          Items: itemNames,
-        });
-      }
-    }
-
-    return filteredData;
-  };
-
-  function generateMenuStructure(filteredItems) {
-    const menuStructure = {};
-
-    filteredItems.forEach(item => {
-      const {Day, Type, Items} = item;
-
-      if (!menuStructure[Day]) {
-        menuStructure[Day] = {};
-      }
-
-      if (!menuStructure[Day][Type]) {
-        menuStructure[Day][Type] = [];
-      }
-
-      menuStructure[Day][Type] = [...menuStructure[Day][Type], ...Items];
-    });
-
-    return menuStructure;
-  }
 
   const loadPage = async () => {
     try {
@@ -91,11 +55,6 @@ const MenuScreen = () => {
                   .get(apiUrl, {headers})
                   .then(response => {
                     setTimetableData(response.data);
-                    console.log(JSON.stringify(response.data));
-                    const filteredResult = filterItemsData(response.data);
-                    console.log(filteredResult);
-                    const menuStructure = generateMenuStructure(filteredResult);
-                    console.log(JSON.stringify(menuStructure, null, 2));
                   })
                   .catch(error => {
                     console.error('ns: Error fetching data:', error);
@@ -134,42 +93,138 @@ const MenuScreen = () => {
 
   useEffect(() => {
     loadPage();
+
+    // Get the current date
+    const currentDate = new Date();
+    // Determine the current day's index (0 for Sunday, 1 for Monday, etc.)
+    const currentDayIndex = currentDate.getDay() - 1; // Subtract 1 to match your daysOfWeek array
+
+    // Update the expandedDays state for the current day
+    setExpandedDays(prevExpandedDays => {
+      const updatedExpandedDays = [...prevExpandedDays];
+      updatedExpandedDays[currentDayIndex] = true;
+      return updatedExpandedDays;
+    });
   }, []);
 
-  return timetableData ? (
+  const [expandedDays, setExpandedDays] = useState([
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ]);
+
+  const toggleDay = index => {
+    const updatedExpandedDays = [...expandedDays];
+    updatedExpandedDays[index] = !updatedExpandedDays[index];
+    setExpandedDays(updatedExpandedDays);
+  };
+
+  const daysOfWeek = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday',
+  ];
+  return timetableData !== null ? (<>
+    <Text
+    style={{
+      fontSize: 28,
+      fontWeight: 'bold',
+      color: '#212B36',
+      padding: '5%',
+      backgroundColor: 'white'
+    }}>
+    Menu
+  </Text>
     <FlatList
-      data={timetableData}
-      keyExtractor={day => day.id}
-      renderItem={({item}) => (
-        <View style={styles.menuDay}>
-          <Text style={styles.title}>
-            {item.Day} - {item.Type}
-          </Text>
-          <Suspense fallback={<Text>Loading...</Text>}>
-            <GridView
-              data={item.Items}
-              numColumns={2}
-              renderItem={menu => <MenuItem menu={menu} />}
-            />
-          </Suspense>
+      style={{ backgroundColor: 'white',
+      padding: 20,
+      paddingBottom: 700,
+      overflow: 'hidden'}}
+      data={daysOfWeek}
+      keyExtractor={(day, index) => String(index)}
+      renderItem={({ item, index }) => (
+        <View style={{...styles.menuDay, borderWidth:1,  borderColor:'#D9D9D9'}}>
+          <TouchableOpacity onPress={() => toggleDay(index)}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#F4F5F6', overflow: 'hidden', borderColor:"#D9D9D9", borderBottomWidth:1, borderTopWidth:1}}>
+              <FontAwesomeIcon
+                icon={expandedDays[index] ? faAngleDown : faAngleRight}
+                size={20}
+                color="#454545"
+                style={{margin:'5%'}}
+              />
+              <Text style={{ ...styles.title}}>
+                {item}
+              </Text>
+            </View>
+          </TouchableOpacity>
+          {expandedDays[index] && timetableData ? (
+            <Suspense fallback={<Text>Loading...</Text>}>
+              <View style={{ margin: 20, borderColor: '#D9D9D9', borderWidth: 1, borderRadius: 15 }}>
+                <View style={{}}>
+                  <View style={{ backgroundColor: '#FAFAFA', borderBottomColor: '#FAFAFA', borderBottomWidth: 1, borderTopLeftRadius:15, borderTopRightRadius:15 }}>
+                    <Text style={{...styles.title, borderColor:"#D9D9D9", borderBottomWidth:1, borderTopWidth:1, paddingLeft:20,  borderTopLeftRadius:15, borderTopRightRadius:15 }}>Breakfast</Text>
+                  </View>
+                  <GridView
+                    data={timetableData[index].Items}
+                    numColumns={2}
+                    renderItem={(menu) => <MenuItem menu={menu} />}
+                  />
+                </View>
+                <View style={{}}>
+                  <Text style={{...styles.title, borderColor:"#D9D9D9", borderBottomWidth:1, borderTopWidth:1, backgroundColor: '#FAFAFA', paddingLeft:20}}>Lunch</Text>
+                  <GridView
+                    data={timetableData[index + 1].Items}
+                    numColumns={2}
+                    renderItem={(menu) => <MenuItem menu={menu} />}
+                  />
+                </View>
+                <View style={{}}>
+                  <Text style={{...styles.title, borderColor:"#D9D9D9", borderBottomWidth:1, borderTopWidth:1, backgroundColor: '#FAFAFA', paddingLeft:20}}>Snacks</Text>
+                  <GridView
+                    data={timetableData[index + 2].Items}
+                    numColumns={2}
+                    renderItem={(menu) => <MenuItem menu={menu} />}
+                  />
+                </View>
+                <View style={{}}>
+                  <Text style={{...styles.title, backgroundColor: '#FAFAFA', borderColor:"#D9D9D9", borderBottomWidth:1, borderTopWidth:1, paddingLeft:20}}>Dinner</Text>
+                  <GridView
+                    data={timetableData[index + 3].Items}
+                    numColumns={2}
+                    renderItem={(menu) => <MenuItem menu={menu} />}
+                  />
+                </View>
+              </View>
+            </Suspense>
+          ) : null}
         </View>
       )}
     />
+    </>
   ) : (
-    <Text style={{color:'#DDDDDD', margin:'5%'}}>Loading...</Text>
+    <Text> Loading... </Text>
   );
+  
 };
+
 const styles = StyleSheet.create({
   menuDay: {
-    margin: 10,
     backgroundColor: 'white',
-    borderRadius: 5,
   },
   title: {
-    fontSize: 24,
-    color: 'black',
-    fontWeight: 'bold',
-    margin: 10,
+    fontSize: 20,
+    color: '#1E1E1E',
+    padding: 10,
+    height: 75,
+    textAlignVertical: 'center',
   },
   menuItem: {
     margin: 10,

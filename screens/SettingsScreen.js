@@ -1,5 +1,5 @@
-import {View, Text, Image, Button, StyleSheet, TouchableOpacity} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, Button, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import {
   GoogleSignin,
   statusCodes,
@@ -8,9 +8,10 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-const SettingsScreen = ({navigation}) => {
+const SettingsScreen = ({ navigation }) => {
   const [userInfo, setUserInfo] = useState(null);
-  useEffect(() => {
+  const [loading, setLoading] = useState(false); // Initialize loading state
+useEffect(() => {
     GoogleSignin.configure({
       webClientId:
         '118779391236-kdlu7dnrcckgp5nl2jnsogqfqtsoejeo.apps.googleusercontent.com',
@@ -20,10 +21,10 @@ const SettingsScreen = ({navigation}) => {
 
   const signIn = async () => {
     try {
+      setLoading(true); 
       await GoogleSignin.hasPlayServices();
       const usrInfo = await GoogleSignin.signIn();
       setUserInfo(usrInfo);
-      navigation.navigate('Main');
       GoogleSignin.signIn()
         .then(userInfo => {
           const currentUser = GoogleSignin.getTokens().then(res => {
@@ -46,15 +47,17 @@ const SettingsScreen = ({navigation}) => {
                 AsyncStorage.setItem('userRole', role);
                 console.log(AsyncStorage.getItem('userRole'));
                 // Continue with navigation
-                // navigation.navigate('Main');
+                navigation.navigate('Main');
               })
               .catch(error => {
                 console.error('Error:', error);
               });
           });
+          setLoading(false);
         })
         .catch(error => {
           console.log('.....' + JSON.stringify(error));
+          setLoading(false); 
         });
   
       try {
@@ -94,36 +97,40 @@ const SettingsScreen = ({navigation}) => {
     }
   };
   return (
-      <View style={{ ...styles.container, backgroundColor: '#FFFFFF', margin: 0 }}>
-        
-        <View style={{backgroundColor:'#EEEEEE', margin:'2%', borderRadius:5, alignItems:'center'}}>
-        {userInfo != null && <Text style={{color:'black', margin:'2%'}}>{userInfo.user.name}</Text>}
-        {userInfo != null && <Text style={{color:'black', margin:'2%'}}>{userInfo.user.email}</Text>}
+    <View style={{ ...styles.container, backgroundColor: '#FFFFFF', margin: 0 }}>
+      <View style={{ backgroundColor: '#EEEEEE', margin: '2%', borderRadius: 5, alignItems: 'center' }}>
+        {userInfo != null && <Text style={{ color: 'black', margin: '2%' }}>{userInfo.user.name}</Text>}
+        {userInfo != null && <Text style={{ color: 'black', margin: '2%' }}>{userInfo.user.email}</Text>}
         {userInfo != null && (
           <Image source={{ uri: userInfo.user.photo }} style={styles.image} />
         )}
-        </View>
-        <Image
-          source={require('./lgo.png')}
-          style={{ height:150, aspectRatio: 1, margin: '3%' }}
-        />
-        <View style={styles.googleSignInContainer}>
-          <GoogleSigninButton
-            style={styles.googleSignInButton}
-            size={GoogleSigninButton.Size.Wide}
-            color={GoogleSigninButton.Color.Light}
-            
-            onPress={() => {
-              signIn();
-            }}
-          />
-        </View>
-        <TouchableOpacity style={styles.button} onPress={signout}>
-        <Text style={styles.buttonText}>Sign Out</Text>
-      </TouchableOpacity>
       </View>
-    );
-  };
+      <Image
+        source={require('./lgo.png')}
+        style={{ height: 150, aspectRatio: 1, margin: '3%' }}
+      />
+      {loading ? ( // Display the activity indicator when loading is true
+        <ActivityIndicator size="large" color="#212B36" />
+      ) : (
+        <View>
+          <View style={styles.googleSignInContainer}>
+            <GoogleSigninButton
+              style={styles.googleSignInButton}
+              size={GoogleSigninButton.Size.Wide}
+              color={GoogleSigninButton.Color.Light}
+              onPress={() => {
+                signIn();
+              }}
+            />
+          </View>
+          <TouchableOpacity style={styles.button} onPress={signout}>
+            <Text style={styles.buttonText}>Sign Out</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+    </View>
+  );
+};
   
   const styles = StyleSheet.create({
     container: {

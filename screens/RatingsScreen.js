@@ -1,14 +1,17 @@
 import React, {useEffect, useState} from 'react';
-import {StyleSheet, View, Image, Text, FlatList} from 'react-native';
+import {View, Image, Text, FlatList, ActivityIndicator} from 'react-native';
 import {
   GoogleSignin,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { styles } from './styles.RatingsScreen';
 
 const RatingsScreen = ({navigation}) => {
   const [fooditemdata, setfooditemdata] = useState(null);
+  const [loading, setLoading] = useState(true);
+
 
   const loadPage = async () => {
     try {
@@ -59,6 +62,7 @@ const RatingsScreen = ({navigation}) => {
       } catch (error) {
         console.error(`Error fetching ratings for Item ${itemId}:`, error);
       }
+      setLoading(false);
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         console.error(error, error.code);
@@ -90,16 +94,18 @@ const RatingsScreen = ({navigation}) => {
         }}>
         Ratings
       </Text>
-      {ratingResponses ? (
+      {loading ? ( // Display a loading indicator when loading is true
+        <ActivityIndicator size="large" color="#212B36" />
+      ) : ratingResponses ? (
         <FlatList
           data={ratingResponses}
-          keyExtractor={item => item._id}
-          renderItem={({item}) => (
+          keyExtractor={(item) => item._id}
+          renderItem={({ item }) => (
             <View style={styles.foodItemContainer}>
               <Image
                 source={{
                   uri: fooditemdata.find(
-                    itemData => itemData.Id === item.FoodItem,
+                    (itemData) => itemData.Id === item.FoodItem
                   )?.Img,
                 }}
                 style={styles.foodItemImage}
@@ -107,7 +113,7 @@ const RatingsScreen = ({navigation}) => {
               <View style={styles.foodItemInfo}>
                 <Text style={styles.foodItemName}>
                   {
-                    fooditemdata.find(itemData => itemData.Id === item.FoodItem)
+                    fooditemdata.find((itemData) => itemData.Id === item.FoodItem)
                       ?.Name
                   }
                 </Text>
@@ -122,59 +128,10 @@ const RatingsScreen = ({navigation}) => {
           )}
         />
       ) : (
-        <Text style={{color: '#DDDDDD', margin: '5%'}}>Loading...</Text>
+        <Text style={{ color: '#DDDDDD', margin: '5%' }}>Loading...</Text>
       )}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: '#F9F9F9',
-    color: 'black',
-  },
-  heading: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 16,
-  },
-  foodItemContainer: {
-    flexDirection: 'row',
-    marginBottom: 16,
-  },
-  foodItemImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 8,
-    marginRight: 12,
-  },
-  foodItemInfo: {
-    flex: 1,
-    backgroundColor: 'white',
-    padding: '2%',
-    borderRadius: 5,
-  },
-  foodItemName: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'black',
-  },
-  ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  foodItemRatingLabel: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    marginRight: 4,
-    color: 'black',
-  },
-  foodItemRatingValue: {
-    fontSize: 20,
-    color: 'black',
-  },
-});
 
 export default RatingsScreen;
